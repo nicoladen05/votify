@@ -1,9 +1,13 @@
-import { pgTable, serial, integer, text } from 'drizzle-orm/pg-core';
+import { pgTable, text, primaryKey, doublePrecision } from 'drizzle-orm/pg-core';
 
-export const task = pgTable('task', {
-	id: serial('id').primaryKey(),
-	title: text('title').notNull(),
-	priority: integer('priority').notNull().default(1)
-});
+export const spotifyTokens = pgTable(
+	'spotifyTokens',
+	{
+		access_token: text('access_token'),
+		refresh_token: text('refresh_token'),
+		expires_in: doublePrecision('expires_in')
+	},
+	(table) => [primaryKey({ columns: [table.access_token, table.refresh_token] })]
+);
 
-export * from './auth.schema';
+//export * from './auth.schema';

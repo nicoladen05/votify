@@ -1,5 +1,7 @@
 import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
+import { db } from '$lib/server/db/index.js';
+import { spotifyTokens } from '$lib/server/db/schema.js';
 import { json, redirect } from '@sveltejs/kit';
 
 export async function GET({ url }) {
@@ -24,5 +26,10 @@ export async function GET({ url }) {
 	});
 	if (!response.ok)
 		return json({ success: false, message: 'Failed to get authorization Token' }, { status: 500 });
-	const data = response.json();
+	const data = await response.json();
+	db.insert(spotifyTokens).values({
+		access_token: data.access_token,
+		refresh_token: data.refresh_token,
+		expires_in: data.expires_in
+	});
 }
