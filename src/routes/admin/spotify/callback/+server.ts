@@ -27,10 +27,12 @@ export async function GET({ url }) {
 	if (!response.ok)
 		return json({ success: false, message: 'Failed to get authorization Token' }, { status: 500 });
 	const data = await response.json();
-	db.insert(spotifyTokens).values({
+
+	await db.insert(spotifyTokens).values({
 		access_token: data.access_token,
 		refresh_token: data.refresh_token,
 		expires_in: data.expires_in
 	});
+
 	return json({ success: true }, { status: 200 });
 }
