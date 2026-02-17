@@ -9,8 +9,8 @@ export async function GET({ url }) {
 	if (!code) throw redirect(303, '/admin');
 
 	const header = {
-		Authorization: btoa(`${PUBLIC_SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
-		'Content-Type': 'application/x-www-form-urlencoded'
+		Authorization: 'Basic ' + btoa(`${PUBLIC_SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
+		'content-type': 'application/x-www-form-urlencoded'
 	};
 
 	const body = new URLSearchParams({
@@ -32,4 +32,5 @@ export async function GET({ url }) {
 		refresh_token: data.refresh_token,
 		expires_in: data.expires_in
 	});
+	return json({ success: true }, { status: 200 });
 }
