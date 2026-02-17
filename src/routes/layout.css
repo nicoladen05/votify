@@ -1,42 +1,27 @@
 @import 'tailwindcss';
+@import '@fontsource/inter';
 
-button,
-.btn {
-	display: inline-block;
-	padding: 0.6rem 1.2rem;
-	font-size: 1rem;
-	font-weight: 500;
-	font-family: inherit;
-	color: #ffffff;
-	background-color: #2563eb; /* Blau */
-	border: 1px solid #2563eb;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: all 0.2s ease-in-out;
+:root {
+	--primary-color: hsl(101, 5%, 6%);
+	--secondary-color: hsl(101, 5%, 10%);
+	--border-color: hsl(101, 5%, 15%);
+	--foreground-color: hsl(101, 5%, 96%);
+	--muted-foreground-color: hsl(101, 5%, 80%);
+	--accent-color: hsl(101, 26%, 46%);
 }
 
-button:hover,
-.btn:hover {
-	background-color: #1d4ed8;
-	border-color: #1d4ed8;
+@theme {
+	--color-primary: var(--primary-color);
+	--color-secondary: var(--secondary-color);
+	--color-border: var(--border-color);
+	--color-foreground: var(--foreground-color);
+	--color-muted-foreground: var(--muted-foreground-color);
+	--color-accent: var(--accent-color);
 }
 
-button:active,
-.btn:active {
-	background-color: #1e40af;
-	border-color: #1e40af;
-}
+body {
+	background-color: var(--primary-color);
+	color: var(--foreground-color);
 
-button:focus,
-.btn:focus {
-	outline: none;
-	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
-}
-
-button:disabled,
-.btn:disabled {
-	background-color: #9ca3af;
-	border-color: #9ca3af;
-	cursor: not-allowed;
-	opacity: 0.7;
+	font-family: 'Inter', system-ui, sans-serif;
 }
