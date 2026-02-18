@@ -1,5 +1,6 @@
 <script lang="ts">
 	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
+	import Queue from '$lib/compenents/Queue.svelte';
 	import SearchBar from '$lib/compenents/SearchBar.svelte';
 	import type { PageProps } from './$types';
 
@@ -13,5 +14,9 @@
 		<hr class="my-4 opacity-0" />
 
 		<NowPlaying {data} />
+
+		<hr class="my-4 opacity-0" />
+
+		<Queue />
 	</div>
 </main>
