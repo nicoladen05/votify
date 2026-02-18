@@ -1,7 +1,6 @@
 import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
-import { db } from '$lib/server/db/index.js';
-import { spotifyTokens } from '$lib/server/db/schema.js';
+import { setAccessToken } from '$lib/server/spotify';
 import { json, redirect } from '@sveltejs/kit';
 
 export async function GET({ url }) {
@@ -10,7 +9,7 @@ export async function GET({ url }) {
 
 	const header = {
 		Authorization: 'Basic ' + btoa(`${PUBLIC_SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
-		'content-type': 'application/x-www-form-urlencoded'
+		'Content-Type': 'application/x-www-form-urlencoded'
 	};
 
 	const body = new URLSearchParams({
@@ -26,13 +25,10 @@ export async function GET({ url }) {
 	});
 	if (!response.ok)
 		return json({ success: false, message: 'Failed to get authorization Token' }, { status: 500 });
+
 	const data = await response.json();
 
-	await db.insert(spotifyTokens).values({
-		access_token: data.access_token,
-		refresh_token: data.refresh_token,
-		expires_in: data.expires_in
-	});
+	await setAccessToken(data.access_token, data.expires_in, data.refresh_token);
 
-	return json({ success: true }, { status: 200 });
+	return redirect(303, '/admin');
 }

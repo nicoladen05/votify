@@ -1,11 +1,11 @@
-import { pgTable, text, primaryKey, doublePrecision } from 'drizzle-orm/pg-core';
+import { pgTable, text, primaryKey, timestamp } from 'drizzle-orm/pg-core';
 
 export const spotifyTokens = pgTable(
 	'spotifyTokens',
 	{
-		access_token: text('access_token'),
-		refresh_token: text('refresh_token'),
-		expires_in: doublePrecision('expires_in')
+		access_token: text('access_token').notNull(),
+		refresh_token: text('refresh_token').notNull(),
+		expires_at: timestamp('expires_at').notNull()
 	},
 	(table) => [primaryKey({ columns: [table.access_token, table.refresh_token] })]
 );
