@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { db } from '$lib/server/db';
-	import { songQueueItem } from '$lib/server/db/schema';
 	import { Search } from '@lucide/svelte';
 	interface Track {
 		uri: string;
@@ -8,14 +6,17 @@
 		name: string;
 		artist: string;
 		context: string;
+		id: string;
 	}
 	let value = '';
 	let data: Track[] = [];
 	let loading = false;
 	let timeout: NodeJS.Timeout;
 	let controller: AbortController;
+	let visible = false;
 
 	$: {
+		visible = true;
 		clearTimeout(timeout);
 		timeout = setTimeout(async () => {
 			if (value) {
@@ -35,7 +36,6 @@
 			});
 			const results = await res.json();
 			data = results;
-			console.log(data);
 		} catch (err: unknown) {
 			if (err instanceof DOMException && err.name === 'AbortError') {
 				return;
@@ -46,15 +46,34 @@
 			loading = false;
 		}
 	}
-	function handleClick(uri: string, id: string) {
-		db.insert(songQueueItem).values({
-			song_id: id,
-			song_uri: uri
+	async function handleClick(uri: string, id: string) {
+		await fetch(`/api/queue?uri=${uri}&id=${id}`, {
+			method: 'POST'
 		});
+		visible = false;
+	}
+
+	function windowClick() {
+		visible = false;
+	}
+
+	function searchBarClick() {
+		if (value) visible = true;
 	}
 </script>
 
-<div class="relative w-full">
+<svelte:window onclick={windowClick} />
+
+<div
+	class="relative w-full"
+	onclick={(e) => {
+		e.stopPropagation();
+		searchBarClick();
+	}}
+	onkeydown={() => {}}
+	role="button"
+	tabindex="0"
+>
 	<!-- Input Wrapper -->
 	<div
 		class="flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-2 transition"
@@ -72,7 +91,7 @@
 	</div>
 
 	<!-- Dropdown -->
-	{#if value}
+	{#if value && visible}
 		<div
 			class="absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-b-xl border border-border bg-primary shadow-lg"
 			style="
@@ -86,7 +105,9 @@
 				{#each data as item (item.uri)}
 					<div
 						class="flex cursor-pointer items-center gap-3 px-4 py-2 transition"
-						onclick={handleClick}
+						onclick={() => {
+							handleClick(item.uri, item.id);
+						}}
 						onkeydown={() => {}}
 						aria-label="Add Song to queue"
 						role="button"
