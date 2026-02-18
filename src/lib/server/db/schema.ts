@@ -14,7 +14,10 @@ export const songQueueItem = pgTable('songQueueItem', {
 	song_id: text('song_id').notNull().primaryKey(),
 	upvotes: integer('upvotes').default(0).notNull(),
 	downvotes: integer('downvotes').default(0).notNull(),
-	song_uri: text('song_uri').notNull()
+	song_uri: text('song_uri').notNull(),
+	img_url: text('img_url').notNull(),
+	title: text('title').notNull(),
+	artist: text('artist').notNull()
 });
 
 //export * from './auth.schema';

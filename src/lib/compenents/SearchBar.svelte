@@ -46,8 +46,14 @@
 			loading = false;
 		}
 	}
-	async function handleClick(uri: string, id: string) {
-		await fetch(`/api/queue?uri=${uri}&id=${id}`, {
+	async function handleClick(
+		uri: string,
+		id: string,
+		img: string | null,
+		title: string,
+		artist: string
+	) {
+		await fetch(`/api/queue?uri=${uri}&id=${id}&img=${img}&title=${title}&artist=${artist}`, {
 			method: 'POST'
 		});
 		visible = false;
@@ -106,7 +112,7 @@
 					<div
 						class="flex cursor-pointer items-center gap-3 px-4 py-2 transition"
 						onclick={() => {
-							handleClick(item.uri, item.id);
+							handleClick(item.uri, item.id, item.image, item.name, item.artist);
 						}}
 						onkeydown={() => {}}
 						aria-label="Add Song to queue"

@@ -29,6 +29,13 @@
       "when": 1771404862059,
       "tag": "0003_zippy_young_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771411783173,
+      "tag": "0004_rich_black_knight",
+      "breakpoints": true
     }
   ]
 }
