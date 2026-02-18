@@ -1,6 +1,6 @@
 <script lang="ts">
 	let value = '';
-	let data: string | any[] = [];
+	let data: string | unknown[] = [];
 	let loading = false;
 	let timeout: NodeJS.Timeout;
 	let controller: AbortController;
@@ -38,7 +38,7 @@
 
 <div
 	class="flex items-center rounded-full border border-[#2a2a2a]
-                bg-[#121212] px-4 py-2
+                bg-secondary px-4 py-2
                 transition
                 focus-within:border-[#1DB954] focus-within:ring-2
                 focus-within:ring-[#1DB954]/40"
