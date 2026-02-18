@@ -3,14 +3,18 @@
 </script>
 
 <div class="flex min-h-26 gap-1 rounded-xl border border-border bg-secondary p-1">
-	{#if data.title}
-		<img src={data.image} alt="Song Cover" class="h-24 w-24 rounded-lg object-cover" />
+	{#if data.playbackState.state !== 'stopped'}
+		<img
+			src={data.playbackState.song.coverImage}
+			alt="Song Cover"
+			class="h-24 w-24 rounded-lg object-cover"
+		/>
 
 		<div class="mx-2 my-3 flex w-full flex-col justify-between">
 			<div class="flex items-start justify-between gap-3">
 				<div class="flex flex-col">
-					<span class="text-[1.2rem]">{data.title}</span>
-					<span class="text-muted-foreground">{data.artist}</span>
+					<span class="text-[1.2rem]">{data.playbackState.song.title}</span>
+					<span class="text-muted-foreground">{data.playbackState.song.artist}</span>
 				</div>
 
 				<!-- Playing Animation -->
@@ -20,29 +24,38 @@
 					<div class="flex h-3 items-end gap-0.5" aria-hidden="true">
 						<span
 							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent motion-safe:animate-[equalizer_900ms_ease-in-out_infinite]"
-							class:opacity-40={!data.is_playing}
-							style:animation-play-state={data.is_playing ? 'running' : 'paused'}
+							class:opacity-40={!(data.playbackState.state === 'playing')}
+							style:animation-play-state={data.playbackState.state === 'playing'
+								? 'running'
+								: 'paused'}
 						></span>
 
 						<span
 							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:120ms] motion-safe:animate-[equalizer_850ms_ease-in-out_infinite]"
-							class:opacity-40={!data.is_playing}
-							style:animation-play-state={data.is_playing ? 'running' : 'paused'}
+							class:opacity-40={!(data.playbackState.state === 'playing')}
+							style:animation-play-state={data.playbackState.state === 'playing'
+								? 'running'
+								: 'paused'}
 						></span>
 
 						<span
 							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:220ms] motion-safe:animate-[equalizer_1000ms_ease-in-out_infinite]"
-							class:opacity-40={!data.is_playing}
-							style:animation-play-state={data.is_playing ? 'running' : 'paused'}
+							class:opacity-40={!(data.playbackState.state === 'playing')}
+							style:animation-play-state={data.playbackState.state === 'playing'
+								? 'running'
+								: 'paused'}
 						></span>
 					</div>
-					<span>{data.is_playing ? 'Playing...' : 'Paused'}</span>
+					<span>{data.playbackState.state === 'playing' ? 'Playing...' : 'Paused'}</span>
 				</div>
 			</div>
 
 			<!-- Progress Bar -->
 			<div class="h-2 w-full rounded-full bg-foreground/20">
-				<div class="h-full rounded-full bg-accent" style="width: {data.progress}%"></div>
+				<div
+					class="h-full rounded-full bg-accent"
+					style="width: {data.playbackState.song.progress}%"
+				></div>
 			</div>
 		</div>
 	{:else}
