@@ -13,7 +13,8 @@ export const spotifyTokens = pgTable(
 export const songQueueItem = pgTable('songQueueItem', {
 	song_id: text('song_id').notNull().primaryKey(),
 	upvotes: integer('upvotes').default(0).notNull(),
-	downvotes: integer('downvotes').default(0).notNull()
+	downvotes: integer('downvotes').default(0).notNull(),
+	song_uri: text('song_uri').notNull()
 });
 
 //export * from './auth.schema';
