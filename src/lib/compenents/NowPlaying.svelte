@@ -19,21 +19,21 @@
 				>
 					<div class="flex h-3 items-end gap-0.5" aria-hidden="true">
 						<span
-							class="inline-block h-full w-0.5 origin-bottom rounded-sm bg-accent motion-safe:animate-[equalizer_900ms_ease-in-out_infinite]"
+							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent motion-safe:animate-[equalizer_900ms_ease-in-out_infinite]"
 							class:opacity-40={!data.is_playing}
-							class:[animation-play-state:paused]={!data.is_playing}
+							style:animation-play-state={data.is_playing ? 'running' : 'paused'}
 						></span>
 
 						<span
-							class="inline-block h-full w-0.5 origin-bottom rounded-sm bg-accent [animation-delay:120ms] motion-safe:animate-[equalizer_850ms_ease-in-out_infinite]"
+							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:120ms] motion-safe:animate-[equalizer_850ms_ease-in-out_infinite]"
 							class:opacity-40={!data.is_playing}
-							class:[animation-play-state:paused]={!data.is_playing}
+							style:animation-play-state={data.is_playing ? 'running' : 'paused'}
 						></span>
 
 						<span
-							class="inline-block h-full w-0.5 origin-bottom rounded-sm bg-accent [animation-delay:220ms] motion-safe:animate-[equalizer_1000ms_ease-in-out_infinite]"
+							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:220ms] motion-safe:animate-[equalizer_1000ms_ease-in-out_infinite]"
 							class:opacity-40={!data.is_playing}
-							class:[animation-play-state:paused]={!data.is_playing}
+							style:animation-play-state={data.is_playing ? 'running' : 'paused'}
 						></span>
 					</div>
 					<span>{data.is_playing ? 'Playing...' : 'Paused'}</span>
