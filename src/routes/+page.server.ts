@@ -36,6 +36,7 @@ export const load: PageServerLoad = async () => {
 	} else {
 		return {
 			is_playing: false,
+			image: data.item.album.images[0].url,
 			title: data.item.name,
 			artist: data.item.artists[0].name,
 			progress: (data.progress_ms / data.item.duration_ms) * 100
