@@ -28,7 +28,7 @@ async function getAccessTokenFromRefreshToken(
 
 	if (!data.access_token) return null;
 
-	return data.access_token;
+	return { accessToken: data.access_token, expiresIn: data.expires_in };
 }
 
 /**
