@@ -40,13 +40,13 @@
 	class="flex items-center rounded-full border border-[#2a2a2a]
                 bg-secondary px-4 py-2
                 transition
-                focus-within:border-[#1DB954] focus-within:ring-2
-                focus-within:ring-[#1DB954]/40"
+                focus-within:border-accent focus-within:ring-2
+                focus-within:ring-accent/40"
 >
 	<!-- Search Icon -->
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
-		class="mr-3 h-5 w-5 text-gray-400"
+		class="mr-3 h-5 w-5 text-muted-foreground"
 		fill="none"
 		viewBox="0 0 24 24"
 		stroke="currentColor"
@@ -63,9 +63,7 @@
 	<input
 		type="text"
 		placeholder="Suchen..."
-		class="w-full bg-transparent text-white
-               placeholder-gray-500
-               focus:outline-none"
+		class="w-full bg-transparent text-foreground placeholder-muted-foreground focus:outline-none"
 		bind:value
 	/>
 	{#if (value && data.length > 0) || loading}
@@ -75,24 +73,24 @@
                 w-full overflow-y-auto
                 rounded-b-xl
                 border
-                border-[#2a2a2a] bg-[#181818] shadow-lg"
+                border-border bg-primary shadow-lg"
 		>
 			{#if loading}
-				<div class="p-4 text-sm text-gray-400">Suche...</div>
+				<div class="p-4 text-sm text-muted-foreground">Suche...</div>
 			{/if}
 
 			{#each data as item (item.id)}
 				<div
 					class="cursor-pointer px-4 py-2
-                    text-white
-                    transition hover:bg-[#282828]"
+					text-foreground
+                    transition hover:bg-secondary"
 				>
 					{item.name}
 				</div>
 			{/each}
 
 			{#if !loading && data.length === 0}
-				<div class="p-4 text-sm text-gray-500">Keine Ergebnisse</div>
+				<div class="p-4 text-sm text-muted-foreground">Keine Ergebnisse</div>
 			{/if}
 		</div>
 	{/if}
