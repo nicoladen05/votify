@@ -32,13 +32,22 @@ export async function GET({ url }) {
 
 	const data = await results.json();
 
-	const simplifiedTracks = data.tracks.items.map((track) => ({
-		uri: track.uri,
-		image: track.album.images?.[0]?.url || null,
-		name: track.name,
-		artist: track.artists?.[0]?.name || 'Unknown',
-		context: track.album.album_type === 'album' ? track.album.name : 'single'
-	}));
+	const simplifiedTracks = data.tracks.items.map(
+		(track: {
+			uri: string;
+			album: { images: { url: string }[]; album_type: string; name: string };
+			name: string;
+			artists: { name: string }[];
+      id: string;
+		}) => ({
+			uri: track.uri,
+			image: track.album.images?.[0]?.url || null,
+			name: track.name,
+			artist: track.artists?.[0]?.name || 'Unknown',
+      context: track.album.album_type === 'album' ? track.album.name : 'single',
+			id: track.id
+		})
+	);
 
 	return json(simplifiedTracks);
 }
