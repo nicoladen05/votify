@@ -1,50 +1,40 @@
 <script lang="ts">
 	import { ChevronUp, ChevronDown } from '@lucide/svelte';
+	import { onMount } from 'svelte';
 
 	type QueueSong = {
-		id: string;
-		image: string;
+		song_uri: string;
+		song_id: string;
+		img_url: string;
 		title: string;
 		artist: string;
-		votes: number;
-		userVote: 'up' | 'down' | null;
+		upvotes: number;
+		downvotes: number;
 	};
 
-	// Example data (no logic yet)
-	const queue: QueueSong[] = [
-		{
-			id: '1',
-			image: 'https://picsum.photos/seed/spotify-queue-1/200/200',
-			title: 'Midnight City',
-			artist: 'M83',
-			votes: 12,
-			userVote: 'up'
-		},
-		{
-			id: '2',
-			image: 'https://picsum.photos/seed/spotify-queue-2/200/200',
-			title: 'Instant Crush',
-			artist: 'Daft Punk (feat. Julian Casablancas)',
-			votes: 8,
-			userVote: null
-		},
-		{
-			id: '3',
-			image: 'https://picsum.photos/seed/spotify-queue-3/200/200',
-			title: '505',
-			artist: 'Arctic Monkeys',
-			votes: 3,
-			userVote: 'down'
-		},
-		{
-			id: '4',
-			image: 'https://picsum.photos/seed/spotify-queue-4/200/200',
-			title: 'Breathe',
-			artist: 'Telepopmusik',
-			votes: 1,
-			userVote: null
+	let queue = $state<QueueSong[]>([]);
+
+	onMount(async () => {
+		const response = await fetch('/api/queue');
+		queue = await response.json();
+	});
+
+	let userVotes = $state<Record<string, 'upvote' | 'downvote' | undefined>>({});
+
+	const vote = async (id: string, type: 'upvote' | 'downvote') => {
+		if (userVotes[id] === type) {
+			// User has already voted this option, remove their vote
+			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=remove`, {
+				method: 'POST'
+			});
+			userVotes = { ...userVotes, [id]: undefined };
+		} else {
+			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=add`, {
+				method: 'POST'
+			});
+			userVotes = { ...userVotes, [id]: type };
 		}
-	];
+	};
 </script>
 
 <div class="rounded-xl border border-border bg-secondary p-2">
@@ -56,11 +46,11 @@
 	</div>
 
 	<div class="flex flex-col gap-1">
-		{#each queue as song, i (song.id)}
+		{#each queue as song, i (song.song_id)}
 			<div class="flex items-center gap-2 rounded-xl border border-border bg-secondary p-1">
 				<!-- Cover -->
 				<img
-					src={song.image}
+					src={song.img_url}
 					alt={`${song.title} cover`}
 					class="h-16 w-16 rounded-lg object-cover"
 				/>
@@ -80,20 +70,24 @@
 						<div class="bg-background flex items-center rounded-full px-2 py-1">
 							<button
 								type="button"
-								class="rounded-md p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
+								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
+								class:bg-accent={userVotes[song.song_id] === 'upvote'}
 								aria-label="Upvote"
+								onclick={() => vote(song.song_id, 'upvote')}
 							>
 								<ChevronUp class="h-4 w-4" />
 							</button>
 
 							<span class="w-8 text-center text-xs text-muted-foreground">
-								{song.votes}
+								{song.upvotes - song.downvotes}
 							</span>
 
 							<button
 								type="button"
-								class="rounded-md p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
+								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
+								class:bg-accent={userVotes[song.song_id] === 'downvote'}
 								aria-label="Downvote"
+								onclick={() => vote(song.song_id, 'downvote')}
 							>
 								<ChevronDown class="h-4 w-4" />
 							</button>
