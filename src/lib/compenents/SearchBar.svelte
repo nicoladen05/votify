@@ -47,13 +47,12 @@
 <div class="relative w-full">
 	<!-- Input Wrapper -->
 	<div
-		class="flex items-center rounded-full border px-4 py-2 transition"
-		style="border-color: var(--border-color); background-color: var(--secondary-color);"
+		class="flex items-center rounded-full border border-border bg-secondary px-4 py-2 transition"
 	>
 		<!-- Search Icon -->
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			class="mr-3 h-5 w-5 text-[var(--muted-foreground-color)]"
+			class="mr-3 h-5 w-5 text-muted-foreground"
 			fill="none"
 			viewBox="0 0 24 24"
 			stroke="currentColor"
@@ -72,37 +71,32 @@
 			placeholder="Suchen..."
 			bind:value
 			class="w-full bg-transparent focus:outline-none"
-			style="color: var(--foreground-color); caret-color: var(--accent-color);"
 		/>
 	</div>
 
 	<!-- Dropdown -->
 	{#if value}
 		<div
-			class="absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-b-xl border shadow-lg"
-			style="border-color: var(--border-color); background-color: var(--primary-color);"
+			class="absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-b-xl border border-border bg-primary shadow-lg"
 		>
 			{#if loading}
-				<div class="p-4 text-sm" style="color: var(--muted-foreground-color)">Suche...</div>
+				<div class="p-4 text-sm text-muted-foreground">Suche...</div>
 			{:else if data.length > 0}
 				{#each data as item (item.uri)}
-					<div
-						class="flex cursor-pointer items-center gap-3 px-4 py-2 transition"
-						style="color: var(--foreground-color);"
-					>
+					<div class="flex cursor-pointer items-center gap-3 px-4 py-2 transition">
 						{#if item.image}
 							<img src={item.image} alt={item.name} class="h-10 w-10 rounded" />
 						{/if}
 						<div class="flex flex-col">
 							<span class="font-medium">{item.name}</span>
-							<span class="text-sm" style="color: var(--muted-foreground-color)">
+							<span class="text-sm text-muted-foreground">
 								{item.artist} • {item.context}
 							</span>
 						</div>
 					</div>
 				{/each}
 			{:else}
-				<div class="p-4 text-sm" style="color: var(--muted-foreground-color)">Keine Ergebnisse</div>
+				<div class="p-4 text-sm text-muted-foreground">Keine Ergebnisse</div>
 			{/if}
 		</div>
 	{/if}
