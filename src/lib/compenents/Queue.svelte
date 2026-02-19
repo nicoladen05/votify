@@ -79,8 +79,17 @@
 		queue = nextQueue;
 	}
 
+	async function getVotes() {
+		const res = await fetch('/api/queue/vote');
+		const data = await res.json();
+		for (const vote of data) {
+			userVotes[vote.song_id] = vote.is_upvote ? 'upvote' : 'downvote';
+		}
+	}
+
 	// Refresh queue every 5 seconds
 	onMount(() => {
+		getVotes();
 		const interval = setInterval(async () => {
 			fetchQueue();
 		}, 5000);
@@ -109,24 +118,47 @@
 		if (userVotes[id] !== type) {
 			// User wants to upvote but has already downvoted
 			if (type === 'upvote' && userVotes[id] == 'downvote') {
-				await fetch(`/api/queue/vote?song_id=${id}&type=downvote&action=remove`, {
-					method: 'POST'
+				await fetch(`/api/queue?song_id=${id}&type=downvote&action=remove`, {
+					method: 'PATCH'
+				});
+				await fetch('/api/queue/vote', {
+					method: 'PATCH',
+					body: JSON.stringify({
+						song_id: id,
+						is_upvote: true
+					})
 				});
 			} // User wants to downvote but has already upvoted
 			else if (type === 'downvote' && userVotes[id] == 'upvote') {
-				await fetch(`/api/queue/vote?song_id=${id}&type=upvote&action=remove`, { method: 'POST' });
+				await fetch(`/api/queue?song_id=${id}&type=upvote&action=remove`, { method: 'PATCH' });
+				await fetch('/api/queue/vote', {
+					method: 'PATCH',
+					body: JSON.stringify({
+						song_id: id,
+						is_upvote: false
+					})
+				});
+			} else {
+				const is_upvote = type === 'upvote';
+				await fetch('/api/queue/vote', {
+					method: 'POST',
+					body: JSON.stringify({
+						song_id: id,
+						is_upvote: is_upvote
+					})
+				});
 			}
 
-			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=add`, {
-				method: 'POST'
+			await fetch(`/api/queue?song_id=${id}&type=${type}&action=add`, {
+				method: 'PATCH'
 			});
 
 			userVotes = { ...userVotes, [id]: type };
 			animateVoteButton(id, type);
 		} else {
 			// User has already voted this option, remove their vote
-			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=remove`, {
-				method: 'POST'
+			await fetch(`/api/queue?song_id=${id}&type=${type}&action=remove`, {
+				method: 'PATCH'
 			});
 
 			userVotes = { ...userVotes, [id]: undefined };

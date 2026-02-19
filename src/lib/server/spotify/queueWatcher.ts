@@ -88,8 +88,6 @@ export function startSpotifyWorker() {
 							position_ms: data.progress_ms
 						})
 					});
-					console.log(nextSong[0].song_id);
-					console.log(nextSong);
 					await db.delete(songQueueItem).where(eq(songQueueItem.song_id, nextSong[0].song_id));
 				}
 			}
