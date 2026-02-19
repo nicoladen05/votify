@@ -1,71 +1,33 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
-	import { browser } from '$app/environment'; // nur im Browser
+	import { browser } from '$app/environment';
 
-	// Lokaler State für die Komponente
-	const playbackState = writable({
-		state: 'stopped',
-		song: {
-			title: '',
-			artist: '',
-			coverImage: '',
-			duration: 0, // in ms
-			progress: 0 // 0-100 (%)
-		}
-	});
+	type PlaybackState = {
+		state: 'playing' | 'paused' | 'stopped';
+		song?: {
+			trackId: string;
+			title: string;
+			artist: string;
+			coverImage: string;
+			duration: number;
+			progress: number; // 0-100
+		};
+	};
 
-	let pollInterval: ReturnType<typeof setInterval>;
+	const playbackState = writable<PlaybackState>({ state: 'stopped' });
+
 	let animationFrame: number;
-
 	let baseProgress = 0;
 	let baseTime = 0;
-	let crossFadeBase = 0;
 
-	// Polling: ruft /api/now-playing alle 5 Sekunden ab
-	async function fetchNowPlaying() {
-		try {
-			const res = await fetch('/api/now-playing');
-			const data = await res.json();
-
-			if (!data) return;
-
-			playbackState.update((prev) => {
-				// Trackwechsel erkennen
-				if (data.song.title !== prev.song.title) {
-					crossFadeBase = 0;
-					baseTime = Date.now();
-				}
-				baseProgress = (data.song.progress / 100) * data.song.duration; // progress in ms
-
-				return {
-					state: data.state,
-					song: {
-						...data.song
-					}
-				};
-			});
-		} catch (err) {
-			console.error(err);
-		}
-	}
-
-	// Progressbar Animation / Aktualisierung
 	function updateProgress() {
 		playbackState.update((state) => {
-			if (state.state === 'playing') {
+			if (state.state === 'playing' && state.song) {
 				const elapsed = Date.now() - baseTime;
 				const progressMs = baseProgress + elapsed;
 				const progress = Math.min((progressMs / state.song.duration) * 100, 100);
 
-				if (progressMs >= state.song.duration && crossFadeBase === 0) {
-					crossFadeBase = Date.now();
-				}
-				if (crossFadeBase > 0 && Date.now() - crossFadeBase > 3000) {
-					crossFadeBase = Date.now();
-					fetchNowPlaying();
-				}
-				// neues Objekt zurückgeben für Reaktivität
 				return {
 					...state,
 					song: {
@@ -83,20 +45,23 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// sofort initial fetch
-		fetchNowPlaying();
+		const evt = new EventSource('/api/now-playing-sse');
+		evt.onmessage = (e) => {
+			const data: PlaybackState = JSON.parse(e.data);
+			playbackState.set(data);
 
-		// Polling alle 5 Sekunden
-		pollInterval = setInterval(fetchNowPlaying, 5000);
+			if (data.song) {
+				baseProgress = (data.song.progress / 100) * data.song.duration;
+				baseTime = Date.now();
+			}
+		};
 
-		// Animation / Progressbar starten
 		updateProgress();
-	});
 
-	onDestroy(() => {
-		if (!browser) return;
-		clearInterval(pollInterval);
-		cancelAnimationFrame(animationFrame);
+		return () => {
+			evt.close();
+			cancelAnimationFrame(animationFrame);
+		};
 	});
 </script>
 
