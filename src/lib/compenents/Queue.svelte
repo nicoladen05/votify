@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { ChevronUp, ChevronDown } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
@@ -14,25 +15,58 @@
 
 	let queue = $state<QueueSong[]>([]);
 
-	onMount(async () => {
+	async function fetchQueue() {
 		const response = await fetch('/api/queue');
 		queue = await response.json();
+	}
+
+	// Refresh queue every 5 seconds
+	onMount(() => {
+		const interval = setInterval(async () => {
+			fetchQueue();
+		}, 5000);
+
+		return () => {
+			clearInterval(interval);
+		};
+	});
+
+	// Refresh queue on state change
+	$effect(() => {
+		if (!browser) return;
+
+		const votes = userVotes;
+		if (!votes) return;
+
+		fetchQueue();
 	});
 
 	let userVotes = $state<Record<string, 'upvote' | 'downvote' | undefined>>({});
 
 	const vote = async (id: string, type: 'upvote' | 'downvote') => {
-		if (userVotes[id] === type) {
+		if (userVotes[id] !== type) {
+			// User wants to upvote but has already downvoted
+			if (type === 'upvote' && userVotes[id] == 'downvote') {
+				await fetch(`/api/queue/vote?song_id=${id}&type=downvote&action=remove`, {
+					method: 'POST'
+				});
+			} // User wants to downvote but has already upvoted
+			else if (type === 'downvote' && userVotes[id] == 'upvote') {
+				await fetch(`/api/queue/vote?song_id=${id}&type=upvote&action=remove`, { method: 'POST' });
+			}
+
+			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=add`, {
+				method: 'POST'
+			});
+
+			userVotes = { ...userVotes, [id]: type };
+		} else {
 			// User has already voted this option, remove their vote
 			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=remove`, {
 				method: 'POST'
 			});
+
 			userVotes = { ...userVotes, [id]: undefined };
-		} else {
-			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=add`, {
-				method: 'POST'
-			});
-			userVotes = { ...userVotes, [id]: type };
 		}
 	};
 </script>

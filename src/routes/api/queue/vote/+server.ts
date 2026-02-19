@@ -25,12 +25,12 @@ export async function POST({ url }) {
 	} else if (action === 'add' && type === 'downvote') {
 		await db
 			.update(songQueueItem)
-			.set({ upvotes: sql`${songQueueItem.downvotes} + 1` })
+			.set({ downvotes: sql`${songQueueItem.downvotes} + 1` })
 			.where(eq(songQueueItem.song_id, song_id));
 	} else if (action === 'remove' && type === 'downvote') {
 		await db
 			.update(songQueueItem)
-			.set({ upvotes: sql`${songQueueItem.downvotes} - 1` })
+			.set({ downvotes: sql`${songQueueItem.downvotes} - 1` })
 			.where(eq(songQueueItem.song_id, song_id));
 	} else {
 		return json({ success: false, message: 'Invalid vote type' });

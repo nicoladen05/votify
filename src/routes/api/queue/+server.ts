@@ -1,6 +1,7 @@
 import { db } from '$lib/server/db';
 import { songQueueItem } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
+import { sql } from 'drizzle-orm';
 
 export async function POST({ url }) {
 	const uri = url.searchParams.get('uri');
@@ -23,5 +24,10 @@ export async function POST({ url }) {
 }
 
 export async function GET() {
-	return json(await db.select().from(songQueueItem));
+	return json(
+		await db
+			.select()
+			.from(songQueueItem)
+			.orderBy(sql`${songQueueItem.upvotes} - ${songQueueItem.downvotes} DESC`)
+	);
 }
