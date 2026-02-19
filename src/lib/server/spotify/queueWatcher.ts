@@ -28,7 +28,7 @@ export function startSpotifyWorker() {
 	started = true;
 
 	let lastTrackId = '';
-	let currentPollingMs = 5000;
+	let nextTrackAdded = false;
 
 	async function poll() {
 		try {
@@ -63,14 +63,12 @@ export function startSpotifyWorker() {
 			// Trackwechsel erkennen
 			if (lastTrackId !== nowPlaying.song!.trackId) {
 				lastTrackId = nowPlaying.song!.trackId;
-				currentPollingMs = 5000; // Reset Polling
 			}
 
-			// kurz vor Ende der Wiedergabe auf 1 Sekunde Polling umstellen
-			if (remainingMs <= 7000) currentPollingMs = 1000;
-
+			if (nextTrackAdded && remainingMs > 12000) nextTrackAdded = false;
 			// Wenn unter 1 Sekunde Rest, nächsten Song pushen
-			if (remainingMs <= 2000) {
+			if (!nextTrackAdded && remainingMs <= 12000) {
+				nextTrackAdded = true;
 				const nextSong = await db
 					.select()
 					.from(songQueueItem)
@@ -85,7 +83,8 @@ export function startSpotifyWorker() {
 							'Content-Type': 'application/json'
 						},
 						body: JSON.stringify({
-							uris: [nextSong[0].song_uri]
+							uris: [data.item.uri, nextSong[0].song_uri],
+							position_ms: data.progress_ms
 						})
 					});
 					await db.delete(songQueueItem).where(eq(songQueueItem.song_id, nextSong[0].song_id));
@@ -99,7 +98,7 @@ export function startSpotifyWorker() {
 		} finally {
 			// Nächstes Polling planen
 			clearTimeout(pollInterval);
-			pollInterval = setTimeout(poll, currentPollingMs);
+			pollInterval = setTimeout(poll, 5000);
 		}
 	}
 
