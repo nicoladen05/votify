@@ -168,7 +168,7 @@
 				/>
 
 				<!-- Main -->
-				<div class="flex w-full items-center justify-between gap-3 px-1">
+				<div class="flex min-w-0 flex-1 items-center justify-between gap-3 px-1">
 					<div class="flex min-w-0 flex-col">
 						<div class="flex items-center gap-2">
 							<span class="text-xs text-muted-foreground">#{i + 1}</span>
