@@ -11,8 +11,7 @@
 		img_url: string;
 		title: string;
 		artist: string;
-		upvotes: number;
-		downvotes: number;
+		score: number;
 	};
 
 	let queue = $state<QueueSong[]>([]);
@@ -227,7 +226,7 @@
 							</button>
 
 							<span class="w-8 text-center text-xs text-muted-foreground">
-								{song.upvotes - song.downvotes}
+								{song.score}
 							</span>
 
 							<button

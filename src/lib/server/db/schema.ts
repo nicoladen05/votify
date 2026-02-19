@@ -53,4 +53,5 @@ export const votes = pgTable(
 		}).onDelete('cascade')
 	]
 );
-//export * from './auth.schema';
+
+export * from './auth.schema';

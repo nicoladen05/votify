@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
-import { songQueueItem } from '$lib/server/db/schema';
+import { songQueueItem, votes } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, desc } from 'drizzle-orm';
 
 let _isClosed = false;
 
@@ -34,10 +34,24 @@ export async function POST({ url }) {
 }
 
 export async function GET() {
+	const score = sql<number>`
+  COUNT(*) FILTER (WHERE ${votes.is_upvote})
+  - COUNT(*) FILTER (WHERE NOT ${votes.is_upvote})
+`.as('score');
+
 	const queueItems = await db
-		.select()
+		.select({
+			song_id: songQueueItem.song_id,
+			song_uri: songQueueItem.song_uri,
+			img_url: songQueueItem.img_url,
+			title: songQueueItem.title,
+			artist: songQueueItem.artist,
+			score
+		})
 		.from(songQueueItem)
-		.orderBy(sql`${songQueueItem.upvotes} - ${songQueueItem.downvotes} DESC`);
+		.leftJoin(votes, sql`${songQueueItem.song_id} = ${votes.song_id}`)
+		.groupBy(songQueueItem.song_id, songQueueItem.song_uri)
+		.orderBy(desc(score));
 
 	return json({ queueItems, isClosed: _isClosed });
 }
