@@ -1,1 +1,0 @@
-ALTER TABLE "songQueueItem" ADD COLUMN "song_uri" text NOT NULL;

@@ -1,9 +1,85 @@
 {
-  "id": "989ef1b8-5b63-4b4f-8331-7ddbe5cd9475",
+  "id": "22ffbff0-67ca-46ac-b7c7-188a8266bf61",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.guest": {
+      "name": "guest",
+      "schema": "",
+      "columns": {
+        "cookie": {
+          "name": "cookie",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.songQueueItem": {
+      "name": "songQueueItem",
+      "schema": "",
+      "columns": {
+        "song_id": {
+          "name": "song_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "upvotes": {
+          "name": "upvotes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "downvotes": {
+          "name": "downvotes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "song_uri": {
+          "name": "song_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "img_url": {
+          "name": "img_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "artist": {
+          "name": "artist",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.spotifyTokens": {
       "name": "spotifyTokens",
       "schema": "",
@@ -12,13 +88,13 @@
           "name": "access_token",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "refresh_token": {
           "name": "refresh_token",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "expires_at": {
           "name": "expires_at",
@@ -35,6 +111,72 @@
           "columns": [
             "access_token",
             "refresh_token"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.votes": {
+      "name": "votes",
+      "schema": "",
+      "columns": {
+        "song_id": {
+          "name": "song_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guest_cookie": {
+          "name": "guest_cookie",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_upvote": {
+          "name": "is_upvote",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "votes_song_id_songQueueItem_song_id_fk": {
+          "name": "votes_song_id_songQueueItem_song_id_fk",
+          "tableFrom": "votes",
+          "tableTo": "songQueueItem",
+          "columnsFrom": [
+            "song_id"
+          ],
+          "columnsTo": [
+            "song_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "votes_guest_cookie_guest_cookie_fk": {
+          "name": "votes_guest_cookie_guest_cookie_fk",
+          "tableFrom": "votes",
+          "tableTo": "guest",
+          "columnsFrom": [
+            "guest_cookie"
+          ],
+          "columnsTo": [
+            "cookie"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "votes_song_id_guest_cookie_pk": {
+          "name": "votes_song_id_guest_cookie_pk",
+          "columns": [
+            "song_id",
+            "guest_cookie"
           ]
         }
       },

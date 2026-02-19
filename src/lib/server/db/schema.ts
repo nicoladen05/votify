@@ -1,4 +1,12 @@
-import { pgTable, text, primaryKey, timestamp, integer } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	text,
+	primaryKey,
+	timestamp,
+	integer,
+	boolean,
+	foreignKey
+} from 'drizzle-orm/pg-core';
 
 export const spotifyTokens = pgTable(
 	'spotifyTokens',
@@ -20,4 +28,29 @@ export const songQueueItem = pgTable('songQueueItem', {
 	artist: text('artist').notNull()
 });
 
+export const guest = pgTable('guest', {
+	cookie: text('cookie').primaryKey() // Cookie ist eindeutige ID
+});
+
+export const votes = pgTable(
+	'votes',
+	{
+		song_id: text('song_id').notNull(),
+		guest_cookie: text('guest_cookie').notNull(),
+		is_upvote: boolean('is_upvote').notNull()
+	},
+	(table) => [
+		primaryKey({ columns: [table.song_id, table.guest_cookie] }),
+
+		foreignKey({
+			columns: [table.song_id],
+			foreignColumns: [songQueueItem.song_id]
+		}).onDelete('cascade'),
+
+		foreignKey({
+			columns: [table.guest_cookie],
+			foreignColumns: [guest.cookie]
+		}).onDelete('cascade')
+	]
+);
 //export * from './auth.schema';
