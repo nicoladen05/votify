@@ -4,6 +4,7 @@
 	import { flip } from 'svelte/animate';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
+	import { isClassDeclaration } from 'typescript';
 
 	type QueueSong = {
 		song_uri: string;
@@ -16,7 +17,7 @@
 	};
 
 	let queue = $state<QueueSong[]>([]);
-	let votingClosed = $state(true);
+	let votingClosed = $state(false);
 
 	// State to trigger css animation classes
 	let voteFeedback = $state<Record<string, 'upvote' | 'downvote' | undefined>>({});
@@ -70,8 +71,12 @@
 
 	async function fetchQueue() {
 		const response = await fetch('/api/queue');
-		const nextQueue: QueueSong[] = await response.json();
-		animateSongMove(nextQueue);
+		const { queueItems, isClosed } = await response.json();
+
+		votingClosed = isClosed;
+
+		const nextQueue: QueueSong[] = queueItems;
+		animateSongMove(queueItems);
 		queue = nextQueue;
 	}
 
@@ -90,8 +95,9 @@
 	$effect(() => {
 		if (!browser) return;
 
+		const closed = votingClosed;
 		const votes = userVotes;
-		if (!votes) return;
+		if (!votes || closed === null) return;
 
 		fetchQueue();
 	});
@@ -133,6 +139,15 @@
 <div class="rounded-xl border border-border bg-secondary p-2">
 	<div class="mb-2 flex items-center justify-between px-2">
 		<h2 class="text-[1.1rem]">Up Next</h2>
+
+		{#if votingClosed}
+			<div
+				class="ml-auto rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold tracking-wide text-foreground uppercase"
+			>
+				Voting Closed
+			</div>
+		{/if}
+
 		<span class="bg-background rounded-full px-2 py-1 text-xs text-muted-foreground">
 			{queue.length} songs
 		</span>
@@ -170,9 +185,9 @@
 								type="button"
 								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 								class:bg-accent={userVotes[song.song_id] === 'upvote'}
-								disabled={votingClosed && i === 0}
-								class:cursor-not-allowed={votingClosed && i === 0}
-								class:opacity-50={votingClosed && i === 0}
+								disabled={votingClosed}
+								class:cursor-not-allowed={votingClosed}
+								class:opacity-50={votingClosed}
 								class:queue-vote-up={voteFeedback[song.song_id] === 'upvote'}
 								aria-label="Upvote"
 								onclick={() => vote(song.song_id, 'upvote')}
@@ -188,9 +203,9 @@
 								type="button"
 								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 								class:bg-destructive={userVotes[song.song_id] === 'downvote'}
-								disabled={votingClosed && i === 0}
-								class:cursor-not-allowed={votingClosed && i === 0}
-								class:opacity-50={votingClosed && i === 0}
+								disabled={votingClosed}
+								class:cursor-not-allowed={votingClosed}
+								class:opacity-50={votingClosed}
 								class:queue-vote-down={voteFeedback[song.song_id] === 'downvote'}
 								aria-label="Downvote"
 								onclick={() => vote(song.song_id, 'downvote')}
@@ -200,14 +215,6 @@
 						</div>
 					</div>
 				</div>
-
-				{#if votingClosed && i === 0}
-					<div
-						class="absolute top-[-5.5px] right-[-2.5px] z-10 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold tracking-wide text-foreground uppercase"
-					>
-						Voting Closed
-					</div>
-				{/if}
 			</div>
 		{/each}
 

@@ -3,6 +3,16 @@ import { songQueueItem } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
 import { sql } from 'drizzle-orm';
 
+let _isClosed = false;
+
+export function _setClosed(bool: boolean) {
+	_isClosed = bool;
+}
+
+export function _getClosed() {
+	return _isClosed;
+}
+
 export async function POST({ url }) {
 	const uri = url.searchParams.get('uri');
 	const id = url.searchParams.get('id');
@@ -24,10 +34,10 @@ export async function POST({ url }) {
 }
 
 export async function GET() {
-	return json(
-		await db
-			.select()
-			.from(songQueueItem)
-			.orderBy(sql`${songQueueItem.upvotes} - ${songQueueItem.downvotes} DESC`)
-	);
+	const queueItems = await db
+		.select()
+		.from(songQueueItem)
+		.orderBy(sql`${songQueueItem.upvotes} - ${songQueueItem.downvotes} DESC`);
+
+	return json({ queueItems, isClosed: _isClosed });
 }

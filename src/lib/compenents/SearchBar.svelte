@@ -76,7 +76,9 @@
 		e.stopPropagation();
 		searchBarClick();
 	}}
-	onkeydown={(event) => {if(event.key === 'Esc' || event.key === 'Escape') visible = false}}
+	onkeydown={(event) => {
+		if (event.key === 'Esc' || event.key === 'Escape') visible = false;
+	}}
 	role="button"
 	tabindex="0"
 >

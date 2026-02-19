@@ -2,11 +2,14 @@ import { db } from '$lib/server/db';
 import { songQueueItem } from '$lib/server/db/schema';
 import { json } from '@sveltejs/kit';
 import { eq, sql } from 'drizzle-orm';
+import { _getClosed } from '../+server.js';
 
 export async function POST({ url }) {
 	const song_id = url.searchParams.get('song_id');
 	const type = url.searchParams.get('type');
 	const action = url.searchParams.get('action');
+
+	if (_getClosed()) return json({ success: false, message: 'Voting Closed' });
 
 	console.log('Received vote:', { song_id, type, action });
 

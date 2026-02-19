@@ -2,6 +2,7 @@ import { getAccessToken } from '$lib/server/spotify';
 import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { songQueueItem } from '../db/schema';
+import { _setClosed, isClosed } from '../../../routes/api/queue/+server';
 
 let started = false;
 
@@ -44,9 +45,7 @@ export function startSpotifyWorker() {
 			}
 
 			const data = await res.json();
-			console.log(data.item.id);
 			const remainingMs = data.item.duration_ms - data.progress_ms;
-			console.log(remainingMs);
 
 			const nowPlaying: NowPlaying = {
 				state: data.is_playing ? 'playing' : 'paused',
@@ -64,6 +63,8 @@ export function startSpotifyWorker() {
 			if (lastTrackId !== nowPlaying.song!.trackId) {
 				lastTrackId = nowPlaying.song!.trackId;
 			}
+
+			_setClosed(remainingMs < 15000);
 
 			if (nextTrackAdded && remainingMs > 12000) nextTrackAdded = false;
 			// Wenn unter 1 Sekunde Rest, nächsten Song pushen
@@ -87,6 +88,8 @@ export function startSpotifyWorker() {
 							position_ms: data.progress_ms
 						})
 					});
+					console.log(nextSong[0].song_id);
+					console.log(nextSong);
 					await db.delete(songQueueItem).where(eq(songQueueItem.song_id, nextSong[0].song_id));
 				}
 			}
