@@ -8,6 +8,7 @@
 	--foreground-color: hsl(101, 5%, 96%);
 	--muted-foreground-color: hsl(101, 5%, 80%);
 	--accent-color: hsl(101, 26%, 46%);
+	--destructive-color: hsl(9, 27%, 46%);
 }
 
 @theme {
@@ -17,6 +18,7 @@
 	--color-foreground: var(--foreground-color);
 	--color-muted-foreground: var(--muted-foreground-color);
 	--color-accent: var(--accent-color);
+	--color-destructive: var(--destructive-color);
 }
 
 body {
@@ -26,6 +28,7 @@ body {
 	font-family: 'Inter', system-ui, sans-serif;
 }
 
+/*Equalizer Animation*/
 @keyframes equalizer {
 	0%,
 	100% {
@@ -34,4 +37,75 @@ body {
 	50% {
 		transform: scaleY(1);
 	}
+}
+
+/*Queue Move and Button Animations*/
+@keyframes queue-vote-up {
+	0% {
+		transform: scale(1);
+	}
+	35% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes queue-vote-down {
+	0% {
+		transform: scale(1);
+	}
+	35% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes queue-move-up {
+	0% {
+		border-color: var(--border-color);
+		background-color: var(--secondary-color);
+	}
+	35% {
+		border-color: hsl(101 26% 46% / 0.8);
+		background-color: color-mix(in srgb, var(--secondary-color) 78%, var(--accent-color));
+	}
+	100% {
+		border-color: var(--border-color);
+		background-color: var(--secondary-color);
+	}
+}
+
+@keyframes queue-move-down {
+	0% {
+		border-color: var(--border-color);
+		background-color: var(--secondary-color);
+	}
+	35% {
+		border-color: hsl(9 27% 46% / 0.8);
+		background-color: color-mix(in srgb, var(--secondary-color) 78%, var(--destructive-color));
+	}
+	100% {
+		border-color: var(--border-color);
+		background-color: var(--secondary-color);
+	}
+}
+
+.queue-vote-up {
+	animation: queue-vote-up 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.queue-vote-down {
+	animation: queue-vote-down 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.queue-move-up {
+	animation: queue-move-up 620ms ease-out;
+}
+
+.queue-move-down {
+	animation: queue-move-down 620ms ease-out;
 }

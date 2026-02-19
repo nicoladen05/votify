@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { ChevronUp, ChevronDown } from '@lucide/svelte';
+	import { flip } from 'svelte/animate';
+	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
 	type QueueSong = {
@@ -14,10 +16,63 @@
 	};
 
 	let queue = $state<QueueSong[]>([]);
+	let votingClosed = $state(true);
+
+	// State to trigger css animation classes
+	let voteFeedback = $state<Record<string, 'upvote' | 'downvote' | undefined>>({});
+	let movedSongs = $state<Record<string, 'up' | 'down' | undefined>>({});
+
+	function animateVoteButton(id: string, type: 'upvote' | 'downvote') {
+		// Remove the animation class, so the animation can play on add
+		voteFeedback = { ...voteFeedback, [id]: undefined };
+
+		// Reapply the class to start the animation
+		voteFeedback = { ...voteFeedback, [id]: type };
+
+		// After 450ms, remove the class again
+		setTimeout(() => {
+			if (voteFeedback[id] !== type) return;
+			const next = { ...voteFeedback };
+			delete next[id];
+			voteFeedback = next;
+		}, 450);
+	}
+
+	function animateSongMove(nextQueue: QueueSong[]) {
+		// Store the current song positions in the queue
+		const previousPositions = new Map(queue.map((song, index) => [song.song_id, index]));
+
+		const moved: Record<string, 'up' | 'down'> = {};
+		for (const [index, song] of nextQueue.entries()) {
+			const previousIndex = previousPositions.get(song.song_id);
+			if (previousIndex === undefined || previousIndex === index) continue;
+
+			// If the position of the song changed, add it to moved
+			moved[song.song_id] = index < previousIndex ? 'up' : 'down';
+		}
+
+		// Return of no song moved
+		if (Object.keys(moved).length === 0) return;
+
+		// Add css classes to the songs that moved to start the animation
+		movedSongs = { ...movedSongs, ...moved };
+
+		// Remove the classes again after the animation is done
+		for (const [songId, direction] of Object.entries(moved)) {
+			setTimeout(() => {
+				if (movedSongs[songId] !== direction) return;
+				const next = { ...movedSongs };
+				delete next[songId];
+				movedSongs = next;
+			}, 650);
+		}
+	}
 
 	async function fetchQueue() {
 		const response = await fetch('/api/queue');
-		queue = await response.json();
+		const nextQueue: QueueSong[] = await response.json();
+		animateSongMove(nextQueue);
+		queue = nextQueue;
 	}
 
 	// Refresh queue every 5 seconds
@@ -44,6 +99,8 @@
 	let userVotes = $state<Record<string, 'upvote' | 'downvote' | undefined>>({});
 
 	const vote = async (id: string, type: 'upvote' | 'downvote') => {
+		if (votingClosed && queue[0]?.song_id === id) return;
+
 		if (userVotes[id] !== type) {
 			// User wants to upvote but has already downvoted
 			if (type === 'upvote' && userVotes[id] == 'downvote') {
@@ -60,6 +117,7 @@
 			});
 
 			userVotes = { ...userVotes, [id]: type };
+			animateVoteButton(id, type);
 		} else {
 			// User has already voted this option, remove their vote
 			await fetch(`/api/queue/vote?song_id=${id}&type=${type}&action=remove`, {
@@ -67,6 +125,7 @@
 			});
 
 			userVotes = { ...userVotes, [id]: undefined };
+			animateVoteButton(id, type);
 		}
 	};
 </script>
@@ -81,7 +140,12 @@
 
 	<div class="flex flex-col gap-1">
 		{#each queue as song, i (song.song_id)}
-			<div class="flex items-center gap-2 rounded-xl border border-border bg-secondary p-1">
+			<div
+				class="relative flex items-center gap-2 rounded-xl border border-border bg-secondary p-1"
+				class:queue-move-up={movedSongs[song.song_id] === 'up'}
+				class:queue-move-down={movedSongs[song.song_id] === 'down'}
+				animate:flip={{ duration: 420, easing: cubicOut }}
+			>
 				<!-- Cover -->
 				<img
 					src={song.img_url}
@@ -106,6 +170,10 @@
 								type="button"
 								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
 								class:bg-accent={userVotes[song.song_id] === 'upvote'}
+								disabled={votingClosed && i === 0}
+								class:cursor-not-allowed={votingClosed && i === 0}
+								class:opacity-50={votingClosed && i === 0}
+								class:queue-vote-up={voteFeedback[song.song_id] === 'upvote'}
 								aria-label="Upvote"
 								onclick={() => vote(song.song_id, 'upvote')}
 							>
@@ -119,7 +187,11 @@
 							<button
 								type="button"
 								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
-								class:bg-accent={userVotes[song.song_id] === 'downvote'}
+								class:bg-destructive={userVotes[song.song_id] === 'downvote'}
+								disabled={votingClosed && i === 0}
+								class:cursor-not-allowed={votingClosed && i === 0}
+								class:opacity-50={votingClosed && i === 0}
+								class:queue-vote-down={voteFeedback[song.song_id] === 'downvote'}
 								aria-label="Downvote"
 								onclick={() => vote(song.song_id, 'downvote')}
 							>
@@ -128,6 +200,14 @@
 						</div>
 					</div>
 				</div>
+
+				{#if votingClosed && i === 0}
+					<div
+						class="absolute top-[-5.5px] right-[-2.5px] z-10 rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold tracking-wide text-foreground uppercase"
+					>
+						Voting Closed
+					</div>
+				{/if}
 			</div>
 		{/each}
 
