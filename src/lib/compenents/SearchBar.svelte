@@ -76,7 +76,7 @@
 		e.stopPropagation();
 		searchBarClick();
 	}}
-	onkeydown={() => {}}
+	onkeydown={(event) => {if(event.key === 'Esc' || event.key === 'Escape') visible = false}}
 	role="button"
 	tabindex="0"
 >
@@ -99,7 +99,7 @@
 	<!-- Dropdown -->
 	{#if value && visible}
 		<div
-			class="absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-b-xl border border-border bg-primary shadow-lg"
+			class="absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-border bg-primary shadow-lg"
 			style="
           		scrollbar-color: var(--accent-color) transparent;
                 scrollbar-width: thin;
