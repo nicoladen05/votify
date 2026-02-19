@@ -1,10 +1,9 @@
 import { getAccessToken } from '$lib/server/spotify';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { songQueueItem } from '../db/schema';
 
 let started = false;
-// let interval: NodeJS.Timeout;
 
 export type NowPlaying = {
 	state: 'playing' | 'paused' | 'stopped';
@@ -22,13 +21,16 @@ let currentState: NowPlaying = { state: 'stopped' };
 let clients: ((data: NowPlaying) => void)[] = [];
 
 // Worker starten
+let pollInterval: NodeJS.Timeout;
+
 export function startSpotifyWorker() {
 	if (started) return;
 	started = true;
 
 	let lastTrackId = '';
+	let currentPollingMs = 5000;
 
-	setInterval(async () => {
+	async function poll() {
 		try {
 			const accessToken = await getAccessToken();
 			const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing?market=DE', {
@@ -43,6 +45,8 @@ export function startSpotifyWorker() {
 
 			const data = await res.json();
 			console.log(data.item.id);
+			const remainingMs = data.item.duration_ms - data.progress_ms;
+			console.log(remainingMs);
 
 			const nowPlaying: NowPlaying = {
 				state: data.is_playing ? 'playing' : 'paused',
@@ -56,39 +60,35 @@ export function startSpotifyWorker() {
 				}
 			};
 
-			console.log(data.item.duration_ms - data.progress_ms);
-			if (data.item.duration_ms - data.progress_ms < 1000) {
+			// Trackwechsel erkennen
+			if (lastTrackId !== nowPlaying.song!.trackId) {
+				lastTrackId = nowPlaying.song!.trackId;
+				currentPollingMs = 5000; // Reset Polling
+			}
+
+			// kurz vor Ende der Wiedergabe auf 1 Sekunde Polling umstellen
+			if (remainingMs <= 7000) currentPollingMs = 1000;
+
+			// Wenn unter 1 Sekunde Rest, nächsten Song pushen
+			if (remainingMs <= 2000) {
 				const nextSong = await db
 					.select()
 					.from(songQueueItem)
 					.orderBy(sql`upvotes - downvotes DESC`)
 					.limit(1);
-				const res = await fetch('https://api.spotify.com/v1/me/player/play', {
-					method: 'PUT',
-					headers: { Authorization: `Bearer ${accessToken}` },
-					body: JSON.stringify({
-						uris: [nextSong[0].song_uri]
-					})
-				});
-			}
-			// Trackwechsel erkennen
-			if (lastTrackId !== nowPlaying.song!.trackId) {
-				lastTrackId = nowPlaying.song!.trackId;
-				if (data.item.duration_ms - data.progress_ms < 10000) {
-					const nextSong = await db
-						.select()
-						.from(songQueueItem)
-						.orderBy(sql`upvotes - downvotes DESC`)
-						.limit(1);
-					const res = await fetch('https://api.spotify.com/v1/me/player/play', {
+
+				if (nextSong[0]) {
+					await fetch('https://api.spotify.com/v1/me/player/play', {
 						method: 'PUT',
-						headers: { Authorization: `Bearer ${accessToken}` },
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+							'Content-Type': 'application/json'
+						},
 						body: JSON.stringify({
 							uris: [nextSong[0].song_uri]
 						})
 					});
-					console.log('test-------------------\n\n\ntest---------------------------');
-					console.log(res);
+					await db.delete(songQueueItem).where(eq(songQueueItem.song_id, nextSong[0].song_id));
 				}
 			}
 
@@ -96,8 +96,15 @@ export function startSpotifyWorker() {
 			broadcast();
 		} catch (err) {
 			console.error('Spotify Worker Fehler:', err);
+		} finally {
+			// Nächstes Polling planen
+			clearTimeout(pollInterval);
+			pollInterval = setTimeout(poll, currentPollingMs);
 		}
-	}, 5000);
+	}
+
+	// initial starten
+	poll();
 }
 
 // SSE: Client registrieren
