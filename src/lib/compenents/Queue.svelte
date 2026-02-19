@@ -4,7 +4,6 @@
 	import { flip } from 'svelte/animate';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import { isClassDeclaration } from 'typescript';
 
 	type QueueSong = {
 		song_uri: string;

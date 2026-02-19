@@ -2,7 +2,7 @@ import { getAccessToken } from '$lib/server/spotify';
 import { eq, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { songQueueItem } from '../db/schema';
-import { _setClosed, isClosed } from '../../../routes/api/queue/+server';
+import { _setClosed } from '../../../routes/api/queue/+server';
 
 let started = false;
 

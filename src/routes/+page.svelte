@@ -2,7 +2,6 @@
 	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
 	import Queue from '$lib/compenents/Queue.svelte';
 	import SearchBar from '$lib/compenents/SearchBar.svelte';
-	import type { PageProps } from './$types';
 </script>
 
 <main class="flex justify-center px-4 pt-6 sm:pt-8">
