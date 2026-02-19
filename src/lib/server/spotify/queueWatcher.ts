@@ -66,10 +66,10 @@ export function startSpotifyWorker() {
 				currentPollingMs = 5000; // Reset Polling
 			}
 
-			// kurz vor Ende der Wiedergabe auf 1 Sekunde Polling umstellen
+			// kurz vor Ende der Wiedergabe auf 1 Sekunde Polling umstellen
 			if (remainingMs <= 7000) currentPollingMs = 1000;
 
-			// Wenn unter 1 Sekunde Rest, nächsten Song pushen
+			// Wenn unter 1 Sekunde Rest, nächsten Song pushen
 			if (remainingMs <= 2000) {
 				const nextSong = await db
 					.select()

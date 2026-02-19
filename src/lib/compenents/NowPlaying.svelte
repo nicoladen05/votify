@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 
@@ -68,7 +68,7 @@
 <div class="flex min-h-26 gap-1 rounded-xl border border-border bg-secondary p-1">
 	{#if $playbackState.state !== 'stopped'}
 		<img
-			src={$playbackState.song.coverImage}
+			src={$playbackState.song?.coverImage}
 			alt="Song Cover"
 			class="h-24 w-24 rounded-lg object-cover"
 		/>
@@ -76,8 +76,8 @@
 		<div class="mx-2 my-3 flex w-full flex-col justify-between">
 			<div class="flex items-start justify-between gap-3">
 				<div class="flex flex-col">
-					<span class="text-[1.2rem]">{$playbackState.song.title}</span>
-					<span class="text-muted-foreground">{$playbackState.song.artist}</span>
+					<span class="text-[1.2rem]">{$playbackState.song?.title}</span>
+					<span class="text-muted-foreground">{$playbackState.song?.artist}</span>
 				</div>
 
 				<!-- Playing Animation -->
@@ -111,7 +111,7 @@
 			<div class="h-2 w-full rounded-full bg-foreground/20">
 				<div
 					class="h-full rounded-full bg-accent"
-					style="width: {$playbackState.song.progress}%"
+					style="width: {$playbackState.song?.progress}%"
 				></div>
 			</div>
 		</div>
