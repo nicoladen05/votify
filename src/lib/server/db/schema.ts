@@ -1,12 +1,4 @@
-import {
-	pgTable,
-	text,
-	primaryKey,
-	timestamp,
-	integer,
-	boolean,
-	foreignKey
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, primaryKey, timestamp, boolean, foreignKey } from 'drizzle-orm/pg-core';
 
 export const spotifyTokens = pgTable(
 	'spotifyTokens',
@@ -20,8 +12,6 @@ export const spotifyTokens = pgTable(
 
 export const songQueueItem = pgTable('songQueueItem', {
 	song_id: text('song_id').notNull().primaryKey(),
-	upvotes: integer('upvotes').default(0).notNull(),
-	downvotes: integer('downvotes').default(0).notNull(),
 	song_uri: text('song_uri').notNull(),
 	img_url: text('img_url').notNull(),
 	title: text('title').notNull(),

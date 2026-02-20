@@ -15,6 +15,13 @@
       "when": 1771503526620,
       "tag": "0001_aromatic_cerise",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771571907346,
+      "tag": "0002_glorious_maximus",
+      "breakpoints": true
     }
   ]
 }
