@@ -115,30 +115,9 @@
 		if (votingClosed && queue[0]?.song_id === id) return;
 
 		if (userVotes[id] !== type) {
-			// User wants to upvote but has already downvoted
-			if (type === 'upvote' && userVotes[id] == 'downvote') {
-				// await fetch(`/api/queue?song_id=${id}&type=downvote&action=remove`, {
-				// 	method: 'PATCH'
-				// });
-				await fetch('/api/queue/vote', {
-					method: 'PATCH',
-					body: JSON.stringify({
-						song_id: id,
-						is_upvote: true
-					})
-				});
-			} // User wants to downvote but has already upvoted
-			else if (type === 'downvote' && userVotes[id] == 'upvote') {
-				// await fetch(`/api/queue?song_id=${id}&type=upvote&action=remove`, { method: 'PATCH' });
-				await fetch('/api/queue/vote', {
-					method: 'PATCH',
-					body: JSON.stringify({
-						song_id: id,
-						is_upvote: false
-					})
-				});
-			} else {
-				const is_upvote = type === 'upvote';
+			const is_upvote = type === 'upvote';
+			// User wants to change vote
+			if (!userVotes[id]) {
 				await fetch('/api/queue/vote', {
 					method: 'POST',
 					body: JSON.stringify({
@@ -146,19 +125,20 @@
 						is_upvote: is_upvote
 					})
 				});
+			} // User hasn't voted anything and votes
+			else {
+				await fetch('/api/queue/vote', {
+					method: 'PATCH',
+					body: JSON.stringify({
+						song_id: id,
+						is_upvote: is_upvote
+					})
+				});
 			}
 
-			// await fetch(`/api/queue?song_id=${id}&type=${type}&action=add`, {
-			// 	method: 'PATCH'
-			// });
-
 			userVotes = { ...userVotes, [id]: type };
-			animateVoteButton(id, type);
 		} else {
-			// User has already voted this option, remove their vote
-			// await fetch(`/api/queue?song_id=${id}&type=${type}&action=remove`, {
-			// 	method: 'PATCH'
-			// });
+			// User takes back vote
 			await fetch('/api/queue/vote', {
 				method: 'DELETE',
 				body: JSON.stringify({
@@ -167,8 +147,8 @@
 			});
 
 			userVotes = { ...userVotes, [id]: undefined };
-			animateVoteButton(id, type);
 		}
+		animateVoteButton(id, type);
 	};
 </script>
 
