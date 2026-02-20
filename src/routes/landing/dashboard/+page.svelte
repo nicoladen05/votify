@@ -25,7 +25,6 @@
 
 	const sidebarItems = [
 		{ icon: LayoutDashboardIcon, label: 'Dashboard', path: '/landing/dashboard' },
-		{ icon: DoorOpenIcon, label: 'My Rooms', path: '/landing/dashboard' },
 		{ icon: CreditCardIcon, label: 'Pricing', path: '/landing' },
 		{ icon: SettingsIcon, label: 'Settings', path: '/landing/dashboard' }
 	] as const;

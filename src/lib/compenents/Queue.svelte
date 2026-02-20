@@ -164,7 +164,7 @@
 			</div>
 		{/if}
 
-		<span class="bg-background rounded-full px-2 py-1 text-xs text-muted-foreground">
+		<span class="rounded-full bg-background px-2 py-1 text-xs text-muted-foreground">
 			{queue.length} songs
 		</span>
 	</div>
@@ -196,7 +196,7 @@
 
 					<!-- Votes -->
 					<div class="flex shrink-0 items-center gap-2">
-						<div class="bg-background flex items-center rounded-full px-2 py-1">
+						<div class="flex items-center rounded-full bg-background px-2 py-1">
 							<button
 								type="button"
 								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"

@@ -15,7 +15,7 @@
 	}: HTMLButtonAttributes & { variant?: Variant; size?: Size; children?: Snippet } = $props();
 
 	const variantClasses: Record<Variant, string> = {
-		hero: 'bg-accent text-foreground hover:bg-accent/85',
+		hero: 'bg-accent text-primary hover:bg-accent/85',
 		'hero-outline':
 			'border border-border bg-transparent text-foreground hover:border-accent hover:bg-accent/10',
 		ghost: 'bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -31,7 +31,7 @@
 
 <button
 	{type}
-	class={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+	class={`inline-flex items-center justify-center gap-2 rounded-lg font-bold transition-all duration-200 hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
 	{...rest}
 >
 	{@render children?.()}

@@ -121,7 +121,7 @@
 
 	<section class="relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
 		<div
-			class="animate-glow-pulse pointer-events-none absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/8 blur-[120px]"
+			class="animate-glow-pulse pointer-events-none absolute top-1/2 left-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/12 blur-[120px]"
 		></div>
 
 		<div class="relative z-10 container mx-auto px-4 text-center">
@@ -133,7 +133,7 @@
 					Powered by Spotify
 				</div> -->
 				<h1
-					class="mb-6 text-5xl leading-tight font-extrabold tracking-tight text-foreground md:text-7xl"
+					class="mb-6 text-5xl leading-tight font-black tracking-tight text-foreground md:text-7xl"
 				>
 					Let Your Guests <br /> <span class="text-gradient-green">Control the Music.</span>
 				</h1>

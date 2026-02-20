@@ -2,25 +2,76 @@
 @import '@fontsource/plus-jakarta-sans';
 
 :root {
-	--primary-color: hsl(101, 5%, 6%);
-	--secondary-color: hsl(101, 5%, 10%);
-	--border-color: hsl(101, 5%, 15%);
-	--foreground-color: hsl(101, 5%, 96%);
-	--muted-foreground-color: hsl(101, 5%, 80%);
-	--accent-color: hsl(101, 26%, 46%);
-	--spotify-green-color: hsl(141, 76%, 48%);
-	--destructive-color: hsl(9, 27%, 46%);
+	--background: 0 0% 7.1%;
+	--foreground: 0 0% 95%;
+
+	--card: 0 0% 9.4%;
+	--card-foreground: 0 0% 95%;
+
+	--popover: 0 0% 9.4%;
+	--popover-foreground: 0 0% 95%;
+
+	--primary: 141 76% 48%;
+	--primary-foreground: 0 0% 0%;
+
+	--secondary: 0 0% 14%;
+	--secondary-foreground: 0 0% 95%;
+
+	--muted: 0 0% 14%;
+	--muted-foreground: 0 0% 70%;
+
+	--accent: 141 76% 48%;
+	--accent-foreground: 0 0% 0%;
+
+	--destructive: 0 72% 65%;
+	--destructive-foreground: 0 0% 100%;
+
+	--border: 0 0% 18%;
+	--input: 0 0% 18%;
+	--ring: 141 76% 48%;
+
+	--radius: 0.75rem;
+
+	--sidebar-background: 0 0% 7.1%;
+	--sidebar-foreground: 0 0% 70%;
+	--sidebar-primary: 141 76% 48%;
+	--sidebar-primary-foreground: 0 0% 0%;
+	--sidebar-accent: 0 0% 14%;
+	--sidebar-accent-foreground: 0 0% 95%;
+	--sidebar-border: 0 0% 18%;
+	--sidebar-ring: 141 76% 48%;
+
+	/* Backwards-compatible aliases used by existing classes */
+	--primary-color: hsl(var(--background));
+	--secondary-color: hsl(var(--secondary));
+	--border-color: hsl(var(--border));
+	--foreground-color: hsl(var(--foreground));
+	--muted-foreground-color: hsl(var(--muted-foreground));
+	--accent-color: hsl(var(--accent));
+	--spotify-green-color: hsl(141 76% 48%);
+	--destructive-color: hsl(var(--destructive));
 }
 
 @theme {
+	--color-background: hsl(var(--background));
+	--color-card: hsl(var(--card));
+	--color-popover: hsl(var(--popover));
 	--color-primary: var(--primary-color);
+	--color-primary-foreground: hsl(var(--primary-foreground));
 	--color-secondary: var(--secondary-color);
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+	--color-muted: hsl(var(--muted));
 	--color-border: var(--border-color);
+	--color-input: hsl(var(--input));
+	--color-ring: hsl(var(--ring));
 	--color-foreground: var(--foreground-color);
 	--color-muted-foreground: var(--muted-foreground-color);
 	--color-accent: var(--accent-color);
+	--color-accent-foreground: hsl(var(--accent-foreground));
 	--color-destructive: var(--destructive-color);
-	--color-spotify-green: hsl(141, 76%, 48%);
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-spotify-green: hsl(var(--primary));
+	--radius: var(--radius);
 }
 
 body {
@@ -54,14 +105,14 @@ body {
 }
 
 .text-gradient-green {
-	background: linear-gradient(135deg, var(--accent-color), hsl(101 26% 56%));
+	background: linear-gradient(135deg, hsl(var(--accent)), hsl(141 90% 60%));
 	-webkit-background-clip: text;
 	background-clip: text;
 	color: transparent;
 }
 
 .bg-gradient-green {
-	background: linear-gradient(135deg, var(--accent-color), hsl(101 26% 56%));
+	background: linear-gradient(135deg, hsl(var(--accent)), hsl(141 76% 36%));
 }
 
 .glow-green {
@@ -118,7 +169,7 @@ body {
 		background-color: var(--secondary-color);
 	}
 	35% {
-		border-color: hsl(101 26% 46% / 0.8);
+		border-color: hsl(var(--accent) / 0.8);
 		background-color: color-mix(in srgb, var(--secondary-color) 78%, var(--accent-color));
 	}
 	100% {
@@ -133,7 +184,7 @@ body {
 		background-color: var(--secondary-color);
 	}
 	35% {
-		border-color: hsl(9 27% 46% / 0.8);
+		border-color: hsl(var(--destructive) / 0.8);
 		background-color: color-mix(in srgb, var(--secondary-color) 78%, var(--destructive-color));
 	}
 	100% {
