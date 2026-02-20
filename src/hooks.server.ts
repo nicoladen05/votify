@@ -7,7 +7,6 @@ import { generateAdminUser } from '$lib/server/generateAdminUser';
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	generateAdminUser();
-	startSpotifyWorker();
 
 	const session = await auth.api.getSession({ headers: event.request.headers });
 
@@ -23,5 +22,7 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 
 	return svelteKitHandler({ event, resolve, auth, building });
 };
+
+startSpotifyWorker();
 
 export const handle: Handle = handleBetterAuth;

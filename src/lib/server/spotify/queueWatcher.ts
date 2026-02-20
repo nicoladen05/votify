@@ -1,7 +1,7 @@
 import { getAccessToken } from '$lib/server/spotify';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, desc } from 'drizzle-orm';
 import { db } from '../db';
-import { songQueueItem } from '../db/schema';
+import { songQueueItem, votes } from '../db/schema';
 import { _setClosed } from '../../../routes/api/queue/+server';
 
 let started = false;
@@ -70,11 +70,21 @@ export function startSpotifyWorker() {
 			// Wenn unter 1 Sekunde Rest, nächsten Song pushen
 			if (!nextTrackAdded && remainingMs <= 12000) {
 				nextTrackAdded = true;
+				const score = sql<number>`
+  COUNT(*) FILTER (WHERE ${votes.is_upvote})
+  - COUNT(*) FILTER (WHERE NOT ${votes.is_upvote})
+`.as('score');
+
 				const nextSong = await db
-					.select()
+					.select({
+						song_id: songQueueItem.song_id,
+						song_uri: songQueueItem.song_uri,
+						score
+					})
 					.from(songQueueItem)
-					.orderBy(sql`upvotes - downvotes DESC`)
-					.limit(1);
+					.leftJoin(votes, sql`${songQueueItem.song_id} = ${votes.song_id}`)
+					.groupBy(songQueueItem.song_id, songQueueItem.song_uri)
+					.orderBy(desc(score));
 
 				if (nextSong[0]) {
 					await fetch('https://api.spotify.com/v1/me/player/play', {
