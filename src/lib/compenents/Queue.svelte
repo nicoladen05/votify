@@ -117,9 +117,9 @@
 		if (userVotes[id] !== type) {
 			// User wants to upvote but has already downvoted
 			if (type === 'upvote' && userVotes[id] == 'downvote') {
-				await fetch(`/api/queue?song_id=${id}&type=downvote&action=remove`, {
-					method: 'PATCH'
-				});
+				// await fetch(`/api/queue?song_id=${id}&type=downvote&action=remove`, {
+				// 	method: 'PATCH'
+				// });
 				await fetch('/api/queue/vote', {
 					method: 'PATCH',
 					body: JSON.stringify({
@@ -129,7 +129,7 @@
 				});
 			} // User wants to downvote but has already upvoted
 			else if (type === 'downvote' && userVotes[id] == 'upvote') {
-				await fetch(`/api/queue?song_id=${id}&type=upvote&action=remove`, { method: 'PATCH' });
+				// await fetch(`/api/queue?song_id=${id}&type=upvote&action=remove`, { method: 'PATCH' });
 				await fetch('/api/queue/vote', {
 					method: 'PATCH',
 					body: JSON.stringify({
@@ -148,16 +148,22 @@
 				});
 			}
 
-			await fetch(`/api/queue?song_id=${id}&type=${type}&action=add`, {
-				method: 'PATCH'
-			});
+			// await fetch(`/api/queue?song_id=${id}&type=${type}&action=add`, {
+			// 	method: 'PATCH'
+			// });
 
 			userVotes = { ...userVotes, [id]: type };
 			animateVoteButton(id, type);
 		} else {
 			// User has already voted this option, remove their vote
-			await fetch(`/api/queue?song_id=${id}&type=${type}&action=remove`, {
-				method: 'PATCH'
+			// await fetch(`/api/queue?song_id=${id}&type=${type}&action=remove`, {
+			// 	method: 'PATCH'
+			// });
+			await fetch('/api/queue/vote', {
+				method: 'DELETE',
+				body: JSON.stringify({
+					song_id: id
+				})
 			});
 
 			userVotes = { ...userVotes, [id]: undefined };

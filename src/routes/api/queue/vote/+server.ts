@@ -43,3 +43,17 @@ export async function GET({ cookies }) {
 	const data = await db.select().from(votes).where(eq(votes.guest_cookie, guest_cookie));
 	return json(data);
 }
+
+export async function DELETE({ request, cookies }) {
+	const data = await request.json();
+	const song_id = data.song_id;
+	const guest_cookie = cookies.get('guest_id');
+
+	if (!song_id) return json({ success: false, message: 'Missing parameters' });
+	if (!guest_cookie) return json({ success: false, message: 'No cookie found' });
+
+	await db
+		.delete(votes)
+		.where(and(eq(song_id, votes.song_id), eq(votes.guest_cookie, guest_cookie)));
+	return json({ success: true });
+}
