@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, MusicIcon } from '@lucide/svelte';
+	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, MusicIcon, User } from '@lucide/svelte';
 	import Button from '$lib/landing/components/ui/Button.svelte';
 	import Input from '$lib/landing/components/ui/Input.svelte';
 
@@ -49,12 +49,31 @@
 				</div>
 			</div>
 
-			<form class="space-y-4" action={resolve('/landing/dashboard')}>
+			<form class="space-y-4" method="post">
+				<input type="hidden" name="action" value={isLogin ? 'login' : 'signup'} />
+				{#if !isLogin}
+					<div class="relative">
+						<User class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+						<Input
+							type="username"
+							name="username"
+							placeholder="Username"
+							class="bg-primary pl-10"
+							required
+						/>
+					</div>
+				{/if}
 				<div class="relative">
 					<MailIcon
 						class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
 					/>
-					<Input type="email" placeholder="Email address" class="bg-primary pl-10" required />
+					<Input
+						type="email"
+						name="email"
+						placeholder="Email address"
+						class="bg-primary pl-10"
+						required
+					/>
 				</div>
 				<div class="relative">
 					<LockIcon
@@ -62,6 +81,7 @@
 					/>
 					<Input
 						type={showPassword ? 'text' : 'password'}
+						name="password"
 						placeholder="Password"
 						class="bg-primary pr-10 pl-10"
 						required
