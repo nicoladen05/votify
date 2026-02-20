@@ -49,6 +49,7 @@
 	},
 	"dependencies": {
 		"@fontsource/inter": "^5.2.8",
+		"@fontsource/plus-jakarta-sans": "^5.2.8",
 		"@lucide/svelte": "^0.574.0",
 		"@sveltejs/adapter-node": "^5.5.3",
 		"postgres": "^3.4.8"

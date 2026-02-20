@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@fontsource/inter';
+@import '@fontsource/plus-jakarta-sans';
 
 :root {
 	--primary-color: hsl(101, 5%, 6%);
@@ -8,6 +8,7 @@
 	--foreground-color: hsl(101, 5%, 96%);
 	--muted-foreground-color: hsl(101, 5%, 80%);
 	--accent-color: hsl(101, 26%, 46%);
+	--spotify-green-color: hsl(141, 76%, 48%);
 	--destructive-color: hsl(9, 27%, 46%);
 }
 
@@ -19,13 +20,60 @@
 	--color-muted-foreground: var(--muted-foreground-color);
 	--color-accent: var(--accent-color);
 	--color-destructive: var(--destructive-color);
+	--color-spotify-green: hsl(141, 76%, 48%);
 }
 
 body {
 	background-color: var(--primary-color);
 	color: var(--foreground-color);
 
-	font-family: 'Inter', system-ui, sans-serif;
+	font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+.container {
+	width: 100%;
+	max-width: 80rem;
+}
+
+.glass {
+	background-color: hsl(0 0% 100% / 0.02);
+	backdrop-filter: blur(12px);
+}
+
+.card-hover {
+	transition:
+		transform 200ms ease,
+		box-shadow 200ms ease,
+		border-color 200ms ease;
+}
+
+.card-hover:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 14px 40px hsl(0 0% 0% / 0.35);
+	border-color: hsl(from var(--accent-color) h s l / 0.5);
+}
+
+.text-gradient-green {
+	background: linear-gradient(135deg, var(--accent-color), hsl(101 26% 56%));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.bg-gradient-green {
+	background: linear-gradient(135deg, var(--accent-color), hsl(101 26% 56%));
+}
+
+.glow-green {
+	box-shadow:
+		0 0 0 1px hsl(from var(--accent-color) h s l / 0.3),
+		0 0 40px hsl(from var(--accent-color) h s l / 0.24);
+}
+
+.glow-green-sm {
+	box-shadow:
+		0 0 0 1px hsl(from var(--accent-color) h s l / 0.22),
+		0 0 20px hsl(from var(--accent-color) h s l / 0.2);
 }
 
 /*Equalizer Animation*/
@@ -94,6 +142,40 @@ body {
 	}
 }
 
+@keyframes glow-pulse {
+	0%,
+	100% {
+		opacity: 0.85;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.035);
+	}
+}
+
+@keyframes fade-up {
+	0% {
+		opacity: 0;
+		transform: translateY(24px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes scale-in {
+	0% {
+		opacity: 0;
+		transform: scale(0.96);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
 .queue-vote-up {
 	animation: queue-vote-up 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -108,4 +190,12 @@ body {
 
 .queue-move-down {
 	animation: queue-move-down 620ms ease-out;
+}
+
+.animate-glow-pulse {
+	animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.animate-scale-in {
+	animation: scale-in 0.45s ease-out forwards;
 }
