@@ -21,7 +21,6 @@ export const actions = {
 		});
 
 		if (authResponse.ok) {
-			console.log('User logged in successfully');
 			return redirect(303, '/admin');
 		} else {
 			const authError = await authResponse.json();

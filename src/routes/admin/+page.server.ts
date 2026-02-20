@@ -2,6 +2,7 @@ import { db } from '$lib/server/db';
 import { spotifyTokens } from '$lib/server/db/schema';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { auth } from '$lib/server/auth.js';
 
 export const load: PageServerLoad = async () => {
 	const spotifyCredentials = await db.select().from(spotifyTokens);
@@ -27,7 +28,11 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions = {
-	logout: async () => {
+	logout: async ({ request }) => {
+		await auth.api.signOut({ headers: request.headers });
+		return redirect(303, '/admin/auth/login');
+	},
+	logoutSpotify: async () => {
 		await db.delete(spotifyTokens);
 		return redirect(303, '/admin');
 	}

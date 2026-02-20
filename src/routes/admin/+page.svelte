@@ -25,13 +25,19 @@
 	<div class="relative w-full max-w-2xl">
 		<section class="rounded-xl border border-border bg-secondary p-2">
 			<div class="mb-3 flex items-start justify-between gap-3">
-				<div class="flex items-center gap-1">
+				<div class="flex min-w-0 flex-1 items-center gap-1">
 					<a href={resolve('/')}>
 						<ChevronLeftIcon
 							class="h-6 w-6 rounded-md text-muted-foreground hover:cursor-pointer hover:bg-foreground/10"
 						/>
 					</a>
 					<h1 class="text-xl font-semibold tracking-tight text-foreground">Settings</h1>
+					<form method="post" action="?/logout" class="flex w-full justify-end">
+						<button
+							class="mx-0.5 ml-auto inline-flex items-center rounded-md bg-destructive px-2 py-0.5 text-sm hover:cursor-pointer hover:bg-destructive/80"
+							>Log out</button
+						>
+					</form>
 				</div>
 			</div>
 
@@ -49,11 +55,11 @@
 						</div>
 					</div>
 
-					<form method="post" action="?/logout" class="flex justify-end">
+					<form method="post" action="?/logoutSpotify" class="flex justify-end">
 						<button
 							class="inline-flex items-center rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-foreground transition-colors hover:cursor-pointer hover:bg-destructive/80"
 						>
-							Log out
+							Log out of Spotify
 						</button>
 					</form>
 				</div>

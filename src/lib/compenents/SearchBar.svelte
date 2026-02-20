@@ -8,22 +8,24 @@
 		context: string;
 		id: string;
 	}
-	let value = '';
-	let data: Track[] = [];
-	let loading = false;
+	let value = $state('');
+	let data: Track[] = $state([]);
+	let loading = $state(false);
 	let timeout: NodeJS.Timeout;
 	let controller: AbortController;
-	let visible = false;
+	let visible = $state(false);
 
-	$: {
+	$effect(() => {
+		const val = value;
+
 		visible = true;
 		clearTimeout(timeout);
 		timeout = setTimeout(async () => {
-			if (value) {
+			if (val) {
 				await search();
 			}
 		}, 300);
-	}
+	});
 
 	async function search() {
 		if (controller) controller.abort();
@@ -92,7 +94,7 @@
 		<!-- Input Field -->
 		<input
 			type="text"
-			placeholder="Suchen..."
+			placeholder="Search..."
 			bind:value
 			class="w-full bg-transparent focus:outline-none"
 		/>
