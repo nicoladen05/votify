@@ -2,15 +2,12 @@
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/stores';
-	import {
-		ArrowLeftIcon,
-		CheckIcon,
-		CopyIcon,
-		ExternalLinkIcon,
-		QrCodeIcon,
-		RadioIcon
-	} from '@lucide/svelte';
+	import { qr } from '@svelte-put/qr/svg';
+	import { ArrowLeftIcon, CheckIcon, CopyIcon, ExternalLinkIcon, RadioIcon } from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
+	import type { PageProps } from './$types';
+
+	const { data }: PageProps = $props();
 
 	const votePath = $derived(`/room/${$page.params.roomId}/guest`);
 
@@ -47,7 +44,7 @@
 				<span class="h-2 w-2 animate-pulse rounded-full bg-accent"></span>
 				Room is Live
 			</div>
-			<h1 class="mb-2 text-3xl font-bold text-foreground">Friday Night Vibes</h1>
+			<h1 class="mb-2 text-3xl font-bold text-foreground">{data.room.name}</h1>
 			<p class="text-muted-foreground">Share the link or QR code with your guests</p>
 		</div>
 
@@ -59,14 +56,20 @@
 				<div
 					class="flex h-48 w-48 items-center justify-center rounded-2xl border border-border bg-primary"
 				>
-					<QrCodeIcon class="h-24 w-24 text-muted-foreground" />
+					<svg
+						class="p-2 text-foreground"
+						use:qr={{
+							data: roomLink,
+							shape: 'circle'
+						}}
+					/>
 				</div>
 
 				<div class="w-full">
 					<p class="mb-2 block text-xs text-muted-foreground">Room Link</p>
 					<div class="flex items-center gap-2 rounded-lg border border-border bg-primary p-3">
 						<code class="flex-1 truncate text-sm text-foreground">{roomLink || votePath}</code>
-						<Button variant="ghost" size="sm" class="shrink-0" onclick={copyLink}>
+						<Button variant="ghost" size="xs" class="h-8 shrink-0" onclick={copyLink}>
 							{#if copied}
 								<CheckIcon class="h-4 w-4 text-accent" />
 							{:else}

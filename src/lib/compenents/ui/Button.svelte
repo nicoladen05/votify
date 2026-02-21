@@ -3,7 +3,7 @@
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 
 	type Variant = 'hero' | 'hero-outline' | 'ghost';
-	type Size = 'sm' | 'md' | 'lg' | 'icon';
+	type Size = 'xs' | 'sm' | 'md' | 'lg' | 'icon';
 
 	let {
 		variant = 'hero',
@@ -22,6 +22,7 @@
 	};
 
 	const sizeClasses: Record<Size, string> = {
+		xs: 'h-5 px-4 text-sm',
 		sm: 'h-9 px-4 text-sm',
 		md: 'h-10 px-4 text-sm',
 		lg: 'h-12 px-6 text-base',
