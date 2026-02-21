@@ -20,6 +20,7 @@
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import CreateRoomDialog from '$lib/compenents/dashboard/CreateRoomDialog.svelte';
 	import type { PageProps } from './$types';
+	import { enhance } from '$app/forms';
 
 	type Plan = 'free' | 'pro' | 'premium';
 
@@ -150,7 +151,7 @@
 						>
 							<BarChart3Icon class="h-4 w-4" />
 						</Button>
-						<form method="post" action="?/deleteRoom">
+						<form method="post" action="?/deleteRoom" use:enhance>
 							<input bind:value={room.id} name="room-id" type="hidden" />
 							<Button
 								variant="ghost"

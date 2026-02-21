@@ -2,6 +2,7 @@
 	import { XIcon } from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import Input from '$lib/compenents/ui/Input.svelte';
+	import { enhance } from '$app/forms';
 
 	let {
 		open = false,
@@ -60,17 +61,20 @@
 				</Button>
 			</div>
 
-			<form class="flex flex-1 flex-col" method="post" action={createAction}>
+			<form
+				class="flex flex-1 flex-col"
+				method="post"
+				action={createAction}
+				use:enhance={() => {
+					closeDialog();
+				}}
+			>
 				<label for="room-name" class="mb-2 text-sm font-medium text-foreground">Room name</label>
 				<Input
 					id="room-name"
 					name="room-name"
 					placeholder="Late Night Jams"
-					value={roomName}
-					oninput={(event) => {
-						roomName = (event.currentTarget as HTMLInputElement).value;
-					}}
-					autofocus
+					bind:value={roomName}
 				/>
 
 				<div class="mt-auto flex flex-col-reverse gap-2 pt-6 sm:flex-row sm:justify-end">

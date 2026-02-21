@@ -9,8 +9,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(room)
 		.where(eq(room.userId, locals.user!.id));
 
-	console.log(rooms);
-
 	return { rooms };
 };
 
