@@ -21,6 +21,7 @@
 	import CreateRoomDialog from '$lib/compenents/dashboard/CreateRoomDialog.svelte';
 	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
+	import { spotifyAuthUrl } from '$lib';
 
 	type Plan = 'free' | 'pro' | 'premium';
 
@@ -152,7 +153,7 @@
 							<BarChart3Icon class="h-4 w-4" />
 						</Button>
 						<form method="post" action="?/deleteRoom" use:enhance>
-							<input bind:value={room.id} name="room-id" type="hidden" />
+							<input value={room.id} name="room-id" type="hidden" />
 							<Button
 								variant="ghost"
 								type="submit"
@@ -182,22 +183,31 @@
 			{/if}
 		</div>
 
-		<div
-			class="mt-10 flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
-		>
-			<div class="flex items-center gap-4">
-				<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-					<RadioIcon class="h-6 w-6 text-accent" />
+		{#if !data.hasConnectedSpotify}
+			<div
+				class="mt-10 flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
+			>
+				<div class="flex items-center gap-4">
+					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+						<RadioIcon class="h-6 w-6 text-accent" />
+					</div>
+					<div>
+						<h3 class="font-bold text-foreground">Spotify Connection</h3>
+						<p class="text-sm text-muted-foreground">
+							Connect your account to start playing music in rooms.
+						</p>
+					</div>
 				</div>
-				<div>
-					<h3 class="font-bold text-foreground">Spotify Connection</h3>
-					<p class="text-sm text-muted-foreground">
-						Connect your account to start playing music in rooms.
-					</p>
-				</div>
+
+				<Button
+					variant="hero"
+					size="sm"
+					onclick={() => {
+						window.location.href = spotifyAuthUrl;
+					}}>Connect Spotify</Button
+				>
 			</div>
-			<Button variant="hero" size="sm">Connect Spotify</Button>
-		</div>
+		{/if}
 
 		<CreateRoomDialog
 			open={isCreateRoomDialogOpen}

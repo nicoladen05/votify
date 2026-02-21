@@ -5,18 +5,27 @@ import {
 	timestamp,
 	boolean,
 	foreignKey,
-	serial
+	serial,
+	integer,
+	pgEnum
 } from 'drizzle-orm/pg-core';
 import { user } from './auth.schema';
 
 export const spotifyTokens = pgTable(
 	'spotifyTokens',
 	{
+		id: serial('id').primaryKey().notNull(),
+		userId: text('userId').notNull(),
 		access_token: text('access_token').notNull(),
 		refresh_token: text('refresh_token').notNull(),
 		expires_at: timestamp('expires_at').notNull()
 	},
-	(table) => [primaryKey({ columns: [table.access_token, table.refresh_token] })]
+	(table) => [
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id]
+		}).onDelete('cascade')
+	]
 );
 
 export const songQueueItem = pgTable('songQueueItem', {
@@ -57,6 +66,7 @@ export const room = pgTable(
 	'room',
 	{
 		id: serial('id').primaryKey().notNull(),
+		spotifyTokens: integer('spotifyTokens'),
 		name: text('name').notNull(),
 		userId: text('userId').notNull()
 	},

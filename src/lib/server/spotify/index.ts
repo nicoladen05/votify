@@ -37,13 +37,19 @@ async function getAccessTokenFromRefreshToken(
  * @param expiresIn The number of seconds the token is valid for
  * @param refreshToken The spotify refresh token
  */
-export async function setAccessToken(accessToken: string, expiresIn: number, refreshToken: string) {
+export async function setAccessToken(
+	accessToken: string,
+	expiresIn: number,
+	refreshToken: string,
+	userId: string
+) {
 	const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
 	await db.insert(spotifyTokens).values({
 		access_token: accessToken,
 		refresh_token: refreshToken,
-		expires_at: expiresAt
+		expires_at: expiresAt,
+		userId
 	});
 }
 

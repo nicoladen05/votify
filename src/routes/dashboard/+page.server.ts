@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { room } from '$lib/server/db/schema';
+import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import type { PageServerLoad } from './$types';
 import { eq, and } from 'drizzle-orm';
 
@@ -9,7 +9,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(room)
 		.where(eq(room.userId, locals.user!.id));
 
-	return { rooms };
+	const spotifyTokens = await db
+		.select()
+		.from(spotifyTokensTable)
+		.where(eq(spotifyTokensTable.userId, locals.user!.id));
+
+	const hasConnectedSpotify = spotifyTokens.length > 0;
+
+	return { rooms, hasConnectedSpotify };
 };
 
 export const actions = {

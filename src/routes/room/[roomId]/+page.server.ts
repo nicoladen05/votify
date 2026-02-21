@@ -20,7 +20,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	return {
 		room: {
-			name: room.name
+			name: room.name,
+			status: 'live'
 		}
 	};
 };
