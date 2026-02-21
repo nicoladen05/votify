@@ -1,4 +1,13 @@
-import { pgTable, text, primaryKey, timestamp, boolean, foreignKey } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	text,
+	primaryKey,
+	timestamp,
+	boolean,
+	foreignKey,
+	serial
+} from 'drizzle-orm/pg-core';
+import { user } from './auth.schema';
 
 export const spotifyTokens = pgTable(
 	'spotifyTokens',
@@ -40,6 +49,21 @@ export const votes = pgTable(
 		foreignKey({
 			columns: [table.guest_cookie],
 			foreignColumns: [guest.cookie]
+		}).onDelete('cascade')
+	]
+);
+
+export const room = pgTable(
+	'room',
+	{
+		id: serial('id').primaryKey().notNull(),
+		name: text('name').notNull(),
+		userId: text('userId').notNull()
+	},
+	(table) => [
+		foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id]
 		}).onDelete('cascade')
 	]
 );
