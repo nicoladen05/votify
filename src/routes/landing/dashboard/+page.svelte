@@ -29,8 +29,11 @@
 		{ icon: SettingsIcon, label: 'Settings', path: '/landing/dashboard' }
 	] as const;
 
-	const rooms: Room[] = [{ id: '1', name: 'Friday Night Vibes', status: 'live' }];
-	const plan: Plan = 'free';
+	const rooms: Room[] = [
+		{ id: '1', name: 'Friday Night Vibes', status: 'live' },
+		{ id: '2', name: 'Saturday Night Vibes', status: 'offline' }
+	];
+	const plan: Plan = 'premium';
 
 	const planBadges = {
 		free: { label: 'Free', icon: ZapIcon, color: 'bg-secondary text-muted-foreground' },

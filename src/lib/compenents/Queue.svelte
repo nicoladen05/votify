@@ -152,27 +152,33 @@
 	};
 </script>
 
-<div class="rounded-xl border border-border bg-secondary p-2">
-	<div class="mb-2 flex items-center justify-between px-2">
-		<h2 class="text-[1.1rem]">Up Next</h2>
+<section class="rounded-2xl border border-border bg-secondary/90 p-3">
+	<div class="mb-3 flex items-center justify-between gap-2 px-1">
+		<div>
+			<p class="text-xs font-semibold tracking-[0.18em] text-muted-foreground uppercase">Queue</p>
+			<h2 class="text-[1.1rem] font-semibold text-foreground">Up Next</h2>
+		</div>
 
 		{#if votingClosed}
 			<div
-				class="ml-auto rounded-full bg-destructive px-2 py-0.5 text-[10px] font-semibold tracking-wide text-foreground uppercase"
+				class="ml-auto rounded-full border border-destructive/40 bg-destructive/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-destructive-foreground uppercase"
 			>
 				Voting Closed
 			</div>
 		{/if}
 
-		<span class="rounded-full bg-background px-2 py-1 text-xs text-muted-foreground">
-			{queue.length} songs
+		<span
+			class="rounded-full border border-border bg-background px-2 py-1 text-xs text-muted-foreground"
+		>
+			{queue.length}
+			{queue.length === 1 ? 'song' : 'songs'}
 		</span>
 	</div>
 
-	<div class="flex flex-col gap-1">
+	<div class="flex flex-col gap-1.5">
 		{#each queue as song, i (song.song_id)}
 			<div
-				class="relative flex items-center gap-2 rounded-xl border border-border bg-secondary p-1"
+				class="relative flex items-center gap-2 rounded-xl border border-border bg-secondary p-1.5"
 				class:queue-move-up={movedSongs[song.song_id] === 'up'}
 				class:queue-move-down={movedSongs[song.song_id] === 'down'}
 				animate:flip={{ duration: 420, easing: cubicOut }}
@@ -188,19 +194,22 @@
 				<div class="flex min-w-0 flex-1 items-center justify-between gap-3 px-1">
 					<div class="flex min-w-0 flex-col">
 						<div class="flex items-center gap-2">
-							<span class="text-xs text-muted-foreground">#{i + 1}</span>
-							<span class="truncate text-[1rem]">{song.title}</span>
+							<span
+								class="rounded-full border border-border bg-primary px-1.5 py-0.5 text-[10px] text-muted-foreground"
+								>#{i + 1}</span
+							>
+							<span class="truncate text-[1rem] font-medium">{song.title}</span>
 						</div>
 						<span class="truncate text-sm text-muted-foreground">{song.artist}</span>
 					</div>
 
-					<!-- Votes -->
 					<div class="flex shrink-0 items-center gap-2">
-						<div class="flex items-center rounded-full bg-background px-2 py-1">
+						<div class="flex items-center rounded-full border border-border bg-background p-1.5">
 							<button
 								type="button"
-								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
+								class="rounded-full p-1 text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
 								class:bg-accent={userVotes[song.song_id] === 'upvote'}
+								class:text-primary={userVotes[song.song_id] === 'upvote'}
 								disabled={votingClosed}
 								class:cursor-not-allowed={votingClosed}
 								class:opacity-50={votingClosed}
@@ -208,17 +217,18 @@
 								aria-label="Upvote"
 								onclick={() => vote(song.song_id, 'upvote')}
 							>
-								<ChevronUp class="h-4 w-4" />
+								<ChevronUp class="h-5 w-5 md:h-4 md:w-4" />
 							</button>
 
-							<span class="w-8 text-center text-xs text-muted-foreground">
+							<span class="w-8 text-center text-muted-foreground md:text-sm">
 								{song.score}
 							</span>
 
 							<button
 								type="button"
-								class="rounded-lg p-1 text-muted-foreground hover:bg-foreground/10 hover:text-foreground"
+								class="rounded-full p-1 text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
 								class:bg-destructive={userVotes[song.song_id] === 'downvote'}
+								class:text-primary={userVotes[song.song_id] === 'downvote'}
 								disabled={votingClosed}
 								class:cursor-not-allowed={votingClosed}
 								class:opacity-50={votingClosed}
@@ -226,7 +236,7 @@
 								aria-label="Downvote"
 								onclick={() => vote(song.song_id, 'downvote')}
 							>
-								<ChevronDown class="h-4 w-4" />
+								<ChevronDown class="h-5 w-5 md:h-4 md:w-4" />
 							</button>
 						</div>
 					</div>
@@ -235,11 +245,9 @@
 		{/each}
 
 		{#if queue.length === 0}
-			<div
-				class="flex min-h-20 items-center justify-center rounded-xl border border-border bg-secondary"
-			>
-				<h3 class="text-[1.1rem]">Queue is empty</h3>
+			<div class="flex min-h-24 items-center justify-center rounded-xl bg-primary/40">
+				<h3 class="text-[1.1rem] font-medium text-muted-foreground">Queue is empty</h3>
 			</div>
 		{/if}
 	</div>
-</div>
+</section>

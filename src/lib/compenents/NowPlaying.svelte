@@ -65,59 +65,77 @@
 	});
 </script>
 
-<div class="flex min-h-26 gap-1 rounded-xl border border-border bg-secondary p-1">
+<section class="rounded-2xl border border-border bg-secondary/90 p-3">
+	<div class="mb-2 flex items-center justify-between px-1">
+		<p
+			class={`flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase ${$playbackState.state === 'playing' ? 'text-accent  ' : ''}`}
+		>
+			<span
+				class={`h-1.5 w-1.5 rounded-full ${$playbackState.state === 'playing' ? 'animate-pulse bg-accent' : 'hidden'}`}
+			></span>
+			Now Playing
+		</p>
+	</div>
+
 	{#if $playbackState.state !== 'stopped'}
-		<img
-			src={$playbackState.song?.coverImage}
-			alt="Song Cover"
-			class="h-24 w-24 rounded-lg object-cover"
-		/>
+		<div class="flex min-h-26 gap-2 rounded-xl border border-border/80 bg-secondary p-1.5">
+			<img
+				src={$playbackState.song?.coverImage}
+				alt="Song Cover"
+				class="h-24 w-24 rounded-xl object-cover"
+			/>
 
-		<div class="mx-2 my-3 flex min-w-0 flex-1 flex-col justify-between">
-			<div class="flex items-start justify-between gap-3">
-				<div class="flex min-w-0 flex-col">
-					<span class="truncate text-[1.2rem]">{$playbackState.song?.title}</span>
-					<span class="truncate text-muted-foreground">{$playbackState.song?.artist}</span>
-				</div>
-
-				<!-- Playing Animation -->
-				<div
-					class="bg-background flex items-center gap-2 rounded-full px-2 py-1 text-xs text-muted-foreground"
-				>
-					<div class="flex h-3 items-end gap-0.5" aria-hidden="true">
-						<span
-							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent motion-safe:animate-[equalizer_900ms_ease-in-out_infinite]"
-							class:opacity-40={!($playbackState.state === 'playing')}
-							style:animation-play-state={$playbackState.state === 'playing' ? 'running' : 'paused'}
-						></span>
-
-						<span
-							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:120ms] motion-safe:animate-[equalizer_850ms_ease-in-out_infinite]"
-							class:opacity-40={!($playbackState.state === 'playing')}
-							style:animation-play-state={$playbackState.state === 'playing' ? 'running' : 'paused'}
-						></span>
-
-						<span
-							class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:220ms] motion-safe:animate-[equalizer_1000ms_ease-in-out_infinite]"
-							class:opacity-40={!($playbackState.state === 'playing')}
-							style:animation-play-state={$playbackState.state === 'playing' ? 'running' : 'paused'}
-						></span>
+			<div class="mx-2 my-2 flex min-w-0 flex-1 flex-col justify-between">
+				<div class="flex items-start justify-between gap-3">
+					<div class="flex min-w-0 flex-col">
+						<span class="truncate text-[1.1rem] font-semibold">{$playbackState.song?.title}</span>
+						<span class="truncate text-sm text-muted-foreground">{$playbackState.song?.artist}</span
+						>
 					</div>
-					<span>{$playbackState.state === 'playing' ? 'Playing...' : 'Paused'}</span>
-				</div>
-			</div>
 
-			<!-- Progress Bar -->
-			<div class="h-2 w-full rounded-full bg-foreground/20">
-				<div
-					class="h-full rounded-full bg-accent"
-					style="width: {$playbackState.song?.progress}%"
-				></div>
+					<div
+						class="flex items-center gap-2 rounded-full border border-border bg-background px-2 py-1 text-xs text-muted-foreground"
+					>
+						<div class="flex h-3 items-end gap-0.5" aria-hidden="true">
+							<span
+								class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent motion-safe:animate-[equalizer_900ms_ease-in-out_infinite]"
+								class:opacity-40={!($playbackState.state === 'playing')}
+								style:animation-play-state={$playbackState.state === 'playing'
+									? 'running'
+									: 'paused'}
+							></span>
+
+							<span
+								class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:120ms] motion-safe:animate-[equalizer_850ms_ease-in-out_infinite]"
+								class:opacity-40={!($playbackState.state === 'playing')}
+								style:animation-play-state={$playbackState.state === 'playing'
+									? 'running'
+									: 'paused'}
+							></span>
+
+							<span
+								class="inline-block h-full w-0.5 origin-bottom rounded-full bg-accent [animation-delay:220ms] motion-safe:animate-[equalizer_1000ms_ease-in-out_infinite]"
+								class:opacity-40={!($playbackState.state === 'playing')}
+								style:animation-play-state={$playbackState.state === 'playing'
+									? 'running'
+									: 'paused'}
+							></span>
+						</div>
+						<span>{$playbackState.state === 'playing' ? 'Playing' : 'Paused'}</span>
+					</div>
+				</div>
+
+				<div class="h-2 w-full rounded-full bg-foreground/20">
+					<div
+						class="bg-gradient-green h-full rounded-full"
+						style="width: {$playbackState.song?.progress}%"
+					></div>
+				</div>
 			</div>
 		</div>
 	{:else}
-		<div class="flex w-full items-center justify-center">
-			<h1 class="text-[1.4rem]">No Song Playing</h1>
+		<div class="flex w-full items-center justify-center rounded-xl bg-primary/40 p-6">
+			<h1 class="text-lg font-medium text-muted-foreground">No song is playing right now</h1>
 		</div>
 	{/if}
-</div>
+</section>

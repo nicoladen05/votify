@@ -84,37 +84,35 @@
 	role="button"
 	tabindex="0"
 >
-	<!-- Input Wrapper -->
 	<div
-		class="flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-2 transition"
+		class="flex items-center gap-2.5 rounded-2xl border border-border bg-secondary px-4 py-3 transition-all duration-200 focus-within:border-accent/45 focus-within:bg-secondary/90"
 	>
-		<!-- Search Icon -->
-		<Search />
+		<div class="rounded-lg border border-border bg-primary p-1.5 text-muted-foreground">
+			<Search class="h-4 w-4" />
+		</div>
 
-		<!-- Input Field -->
 		<input
 			type="text"
-			placeholder="Search..."
+			placeholder="Search songs to add..."
 			bind:value
-			class="w-full bg-transparent focus:outline-none"
+			class="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none"
 		/>
 	</div>
 
-	<!-- Dropdown -->
 	{#if value && visible}
 		<div
-			class="absolute top-full left-0 z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-border bg-primary shadow-lg"
+			class="animate-scale-in absolute top-full left-0 z-50 mt-2 max-h-76 w-full overflow-y-auto rounded-2xl border border-border bg-primary p-1.5 shadow-2xl backdrop-blur"
 			style="
-          		scrollbar-color: var(--accent-color) transparent;
+           		scrollbar-color: var(--accent-color) transparent;
                 scrollbar-width: thin;
             "
 		>
 			{#if loading}
-				<div class="p-4 text-sm text-muted-foreground">Suche...</div>
+				<div class="p-4 text-sm text-muted-foreground">Searching...</div>
 			{:else if data.length > 0}
 				{#each data as item (item.uri)}
 					<div
-						class="flex cursor-pointer items-center gap-3 px-4 py-2 transition"
+						class="flex cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 transition-all duration-150 hover:border-border hover:bg-secondary"
 						onclick={() => {
 							handleClick(item.uri, item.id, item.image, item.name, item.artist);
 						}}
@@ -124,18 +122,18 @@
 						tabindex="0"
 					>
 						{#if item.image}
-							<img src={item.image} alt={item.name} class="h-10 w-10 rounded" />
+							<img src={item.image} alt={item.name} class="h-11 w-11 rounded-lg object-cover" />
 						{/if}
-						<div class="flex flex-col">
-							<span class="font-medium">{item.name}</span>
-							<span class="text-sm text-muted-foreground">
+						<div class="flex min-w-0 flex-col">
+							<span class="truncate text-sm font-semibold text-foreground">{item.name}</span>
+							<span class="truncate text-xs text-muted-foreground">
 								{item.artist} • {item.context}
 							</span>
 						</div>
 					</div>
 				{/each}
 			{:else}
-				<div class="p-4 text-sm text-muted-foreground">Keine Ergebnisse</div>
+				<div class="p-4 text-sm text-muted-foreground">No results</div>
 			{/if}
 		</div>
 	{/if}

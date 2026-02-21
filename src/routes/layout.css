@@ -23,7 +23,7 @@
 	--accent: 141 76% 48%;
 	--accent-foreground: 0 0% 0%;
 
-	--destructive: 0 72% 65%;
+	--destructive: 0 83% 65%;
 	--destructive-foreground: 0 0% 100%;
 
 	--border: 0 0% 18%;
@@ -79,6 +79,12 @@ body {
 	color: var(--foreground-color);
 
 	font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+::selection {
+	background: var(--accent-color);
+	color: black;
+	text-shadow: none;
 }
 
 .container {
@@ -248,5 +254,5 @@ body {
 }
 
 .animate-scale-in {
-	animation: scale-in 0.45s ease-out forwards;
+	animation: scale-in 0.35s ease-out forwards;
 }
