@@ -26,7 +26,7 @@ export const actions = {
 		}
 
 		if (authResponse.ok) {
-			return redirect(303, '/landing/dashboard');
+			return redirect(303, '/dashboard');
 		} else {
 			const authError = await authResponse.json();
 			return fail(401, { error: authError.message });

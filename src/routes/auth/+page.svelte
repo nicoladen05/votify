@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, MusicIcon, User } from '@lucide/svelte';
-	import Button from '$lib/landing/components/ui/Button.svelte';
-	import Input from '$lib/landing/components/ui/Input.svelte';
+	import Button from '$lib/compenents/ui/Button.svelte';
+	import Input from '$lib/compenents/ui/Input.svelte';
 
 	let isLogin = $state(true);
 	let showPassword = $state(false);
@@ -15,7 +15,7 @@
 
 	<div class="animate-scale-in relative w-full max-w-md">
 		<div class="mb-8 text-center">
-			<a class="inline-flex cursor-pointer items-center gap-2" href={resolve('/landing')}>
+			<a class="inline-flex cursor-pointer items-center gap-2" href={resolve('/')}>
 				<MusicIcon class="h-8 w-8 text-accent" />
 				<span class="text-2xl font-bold text-foreground">Votify</span>
 			</a>
@@ -29,7 +29,7 @@
 				{isLogin ? 'Log in to manage your rooms' : 'Start hosting music rooms today'}
 			</p>
 
-			<a href={resolve('/landing/dashboard')}>
+			<a href={resolve('/dashboard')}>
 				<Button variant="hero-outline" class="mb-6 w-full gap-2">
 					<svg viewBox="0 0 24 24" class="h-5 w-5 fill-accent" xmlns="http://www.w3.org/2000/svg">
 						<path

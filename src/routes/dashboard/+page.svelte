@@ -4,7 +4,6 @@
 		BarChart3Icon,
 		CreditCardIcon,
 		CrownIcon,
-		DoorOpenIcon,
 		LayoutDashboardIcon,
 		LockIcon,
 		LogOutIcon,
@@ -18,15 +17,15 @@
 		Trash2Icon,
 		ZapIcon
 	} from '@lucide/svelte';
-	import Button from '$lib/landing/components/ui/Button.svelte';
+	import Button from '$lib/compenents/ui/Button.svelte';
 
 	type Room = { id: string; name: string; status: 'live' | 'offline' };
 	type Plan = 'free' | 'pro' | 'premium';
 
 	const sidebarItems = [
-		{ icon: LayoutDashboardIcon, label: 'Dashboard', path: '/landing/dashboard' },
-		{ icon: CreditCardIcon, label: 'Pricing', path: '/landing' },
-		{ icon: SettingsIcon, label: 'Settings', path: '/landing/dashboard' }
+		{ icon: LayoutDashboardIcon, label: 'Dashboard', path: '/dashboard' },
+		{ icon: CreditCardIcon, label: 'Pricing', path: '/' },
+		{ icon: SettingsIcon, label: 'Settings', path: '/dashboard' }
 	] as const;
 
 	const rooms: Room[] = [
@@ -63,7 +62,7 @@
 			{/each}
 		</nav>
 		<a
-			href={resolve('/landing')}
+			href={resolve('/')}
 			class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
 		>
 			<LogOutIcon class="h-4 w-4" />
@@ -114,7 +113,7 @@
 						</span>
 					</div>
 					<div class="flex items-center gap-2">
-						<a href={resolve(`/landing/room/${room.id}`)}>
+						<a href={resolve(`/room/${room.id}`)}>
 							<Button variant="hero" size="sm">
 								<PlayIcon class="mr-1 h-3 w-3" />
 								Launch

@@ -12,7 +12,7 @@
 		<p class="mb-6 text-sm text-muted-foreground">
 			{page.error?.message ?? 'Something went wrong'}
 		</p>
-		<a href={resolve('/landing')} class="text-accent underline hover:text-accent/90"
+		<a href={resolve('/')} class="text-accent underline hover:text-accent/90"
 			>Return to Home</a
 		>
 	</div>

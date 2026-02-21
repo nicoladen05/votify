@@ -10,10 +10,9 @@
 		QrCodeIcon,
 		RadioIcon
 	} from '@lucide/svelte';
-	import Button from '$lib/landing/components/ui/Button.svelte';
+	import Button from '$lib/compenents/ui/Button.svelte';
 
-	const shortCode = $derived($page.params.roomId === '1' ? 'abc123' : $page.params.roomId);
-	const votePath = $derived(`/landing/vote/${shortCode}`);
+	const votePath = $derived(`/room/${$page.params.roomId}/guest`);
 
 	let copied = $state(false);
 	let roomLink = $state('');
@@ -34,7 +33,7 @@
 <div class="min-h-screen bg-primary p-4 md:p-10">
 	<div class="mx-auto max-w-2xl">
 		<a
-			href={resolve('/landing/dashboard')}
+			href={resolve('/dashboard')}
 			class="mb-8 flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
 		>
 			<ArrowLeftIcon class="h-4 w-4" />
@@ -78,7 +77,7 @@
 					</div>
 				</div>
 
-				<a class="w-full" href={resolve('/landing/vote/abc123')}>
+				<a class="w-full" href={resolve(`/room/${$page.params.roomId}/guest`)}>
 					<Button variant="hero" class="w-full">
 						<ExternalLinkIcon class="mr-2 h-4 w-4" />
 						Open Guest View
