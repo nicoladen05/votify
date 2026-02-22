@@ -8,7 +8,8 @@
 	const { data } = $props();
 
 	const isLoggedIn = $derived(data.isLoggedIn);
-	const roomName = 'Friday Night Vibes';
+	const roomName = $derived(data.roomName);
+	const roomId = $derived(data.roomId);
 </script>
 
 <main class="relative min-h-screen overflow-x-clip bg-primary px-4 pt-6 pb-10 sm:pt-8">
@@ -42,15 +43,15 @@
 
 		<div class="flex flex-col gap-4 rounded-2xl border border-border/70 bg-secondary/25 p-3 sm:p-4">
 			<div class="animate-scale-in z-10" style="animation-delay: 40ms;">
-				<SearchBar />
+				<SearchBar {roomId} />
 			</div>
 
 			<div class="animate-scale-in" style="animation-delay: 80ms;">
-				<NowPlaying />
+				<NowPlaying {roomId} />
 			</div>
 
 			<div class="animate-scale-in" style="animation-delay: 120ms;">
-				<Queue />
+				<Queue {roomId} />
 			</div>
 
 			<button
