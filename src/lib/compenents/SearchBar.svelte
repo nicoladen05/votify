@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { Search } from '@lucide/svelte';
+	let { roomId } = $props();
+
 	interface Track {
 		uri: string;
 		image: string | null;
@@ -33,9 +35,12 @@
 		loading = true;
 		if (value.length <= 2) return;
 		try {
-			const res = await fetch(`/api/search?q=${value}&limit=5`, {
-				signal: controller.signal
-			});
+			const res = await fetch(
+				`/api/search?q=${encodeURIComponent(value)}&limit=5&roomId=${roomId}`,
+				{
+					signal: controller.signal
+				}
+			);
 			const results = await res.json();
 			data = results;
 		} catch (err: unknown) {
@@ -55,9 +60,12 @@
 		title: string,
 		artist: string
 	) {
-		await fetch(`/api/queue?uri=${uri}&id=${id}&img=${img}&title=${title}&artist=${artist}`, {
-			method: 'POST'
-		});
+		await fetch(
+			`/api/queue?roomId=${roomId}&uri=${encodeURIComponent(uri)}&id=${encodeURIComponent(id)}&img=${encodeURIComponent(img ?? '')}&title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}`,
+			{
+				method: 'POST'
+			}
+		);
 		visible = false;
 	}
 

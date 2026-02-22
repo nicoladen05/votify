@@ -3,6 +3,8 @@
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 
+	let { roomId } = $props();
+
 	type PlaybackState = {
 		state: 'playing' | 'paused' | 'stopped';
 		song?: {
@@ -45,7 +47,7 @@
 	onMount(() => {
 		if (!browser) return;
 
-		const evt = new EventSource('/api/now-playing-sse');
+		const evt = new EventSource(`/api/now-playing-sse?roomId=${roomId}`);
 		evt.onmessage = (e) => {
 			const data: PlaybackState = JSON.parse(e.data);
 			playbackState.set(data);
