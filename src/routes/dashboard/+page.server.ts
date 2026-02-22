@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { eq, and } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -19,13 +19,19 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return { rooms, hasConnectedSpotify };
 };
 
-export const actions = {
+export const actions: Actions = {
 	createRoom: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const roomName = formData.get('room-name') as string;
 		const userId = locals.user!.id;
+		const token = await db
+			.select({ id: spotifyTokensTable.id })
+			.from(spotifyTokensTable)
+			.where(eq(spotifyTokensTable.userId, userId))
+			.limit(1)
+			.then((rows) => rows[0]);
 
-		await db.insert(room).values({ name: roomName, userId });
+		await db.insert(room).values({ name: roomName, userId, spotifyTokens: token?.id ?? null });
 	},
 
 	deleteRoom: async ({ request, locals }) => {
