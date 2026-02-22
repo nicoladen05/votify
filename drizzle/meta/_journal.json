@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1771503202315,
-      "tag": "0000_worried_wolfpack",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1771503526620,
-      "tag": "0001_aromatic_cerise",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1771571907346,
-      "tag": "0002_glorious_maximus",
+      "when": 1771753931554,
+      "tag": "0000_clear_frightful_four",
       "breakpoints": true
     }
   ]

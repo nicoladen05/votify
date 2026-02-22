@@ -3,6 +3,7 @@
 
 	let {
 		class: className = '',
+		value: value = $bindable(),
 		type = 'text',
 		...rest
 	}: HTMLInputAttributes = $props();
@@ -10,6 +11,7 @@
 
 <input
 	{type}
-	class={`h-10 w-full rounded-lg border border-border bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 ${className}`}
+	bind:value
+	class={`h-10 w-full rounded-lg border border-border bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:ring-2 focus:ring-accent/20 focus:outline-none ${className}`}
 	{...rest}
 />

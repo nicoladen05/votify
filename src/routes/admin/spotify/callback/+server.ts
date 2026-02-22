@@ -1,9 +1,13 @@
 import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
 import { setAccessToken } from '$lib/server/spotify';
-import { json, redirect } from '@sveltejs/kit';
+import { error, json, redirect } from '@sveltejs/kit';
 
-export async function GET({ url }) {
+export async function GET({ url, locals }) {
+	if (!locals.user) {
+		throw error(403, '/admin');
+	}
+
 	const code = url.searchParams.get('code');
 	if (!code) throw redirect(303, '/admin');
 
@@ -28,7 +32,7 @@ export async function GET({ url }) {
 
 	const data = await response.json();
 
-	await setAccessToken(data.access_token, data.expires_in, data.refresh_token);
+	await setAccessToken(data.access_token, data.expires_in, data.refresh_token, locals.user.id);
 
 	return redirect(303, '/admin');
 }

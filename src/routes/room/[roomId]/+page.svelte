@@ -2,15 +2,20 @@
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/stores';
+	import { qr } from '@svelte-put/qr/svg';
 	import {
 		ArrowLeftIcon,
 		CheckIcon,
 		CopyIcon,
 		ExternalLinkIcon,
-		QrCodeIcon,
+		FileExclamationPoint,
+		KeyRound,
 		RadioIcon
 	} from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
+	import type { PageProps } from './$types';
+
+	const { data }: PageProps = $props();
 
 	const votePath = $derived(`/room/${$page.params.roomId}/guest`);
 
@@ -41,13 +46,30 @@
 		</a>
 
 		<div class="mb-10 text-center" style="animation: fade-up 0.6s ease-out forwards;">
-			<div
-				class="glow-green-sm animate-glow-pulse mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-2 text-sm font-bold text-accent"
-			>
-				<span class="h-2 w-2 animate-pulse rounded-full bg-accent"></span>
-				Room is Live
-			</div>
-			<h1 class="mb-2 text-3xl font-bold text-foreground">Friday Night Vibes</h1>
+			{#if data.room.status === 'live'}
+				<div
+					class="glow-green-sm animate-glow-pulse mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-2 text-sm font-bold text-accent"
+				>
+					<span class="h-2 w-2 animate-pulse rounded-full bg-accent"></span>
+					Room is Live
+				</div>
+			{:else if data.room.status === 'offline'}
+				<div
+					class="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary/80 px-4 py-2 text-sm font-bold text-muted-foreground"
+				>
+					<span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
+					Room is unable to play
+				</div>
+			{:else}
+				<div
+					class="mb-6 inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm font-bold text-destructive"
+				>
+					<span class="h-2 w-2 rounded-full bg-destructive"></span>
+					Room is unable to play
+				</div>
+			{/if}
+
+			<h1 class="mb-2 text-3xl font-bold text-foreground">{data.room.name}</h1>
 			<p class="text-muted-foreground">Share the link or QR code with your guests</p>
 		</div>
 
@@ -59,14 +81,20 @@
 				<div
 					class="flex h-48 w-48 items-center justify-center rounded-2xl border border-border bg-primary"
 				>
-					<QrCodeIcon class="h-24 w-24 text-muted-foreground" />
+					<svg
+						class="p-2 text-foreground"
+						use:qr={{
+							data: roomLink,
+							shape: 'circle'
+						}}
+					/>
 				</div>
 
 				<div class="w-full">
 					<p class="mb-2 block text-xs text-muted-foreground">Room Link</p>
 					<div class="flex items-center gap-2 rounded-lg border border-border bg-primary p-3">
 						<code class="flex-1 truncate text-sm text-foreground">{roomLink || votePath}</code>
-						<Button variant="ghost" size="sm" class="shrink-0" onclick={copyLink}>
+						<Button variant="ghost" size="xs" class="h-8 shrink-0" onclick={copyLink}>
 							{#if copied}
 								<CheckIcon class="h-4 w-4 text-accent" />
 							{:else}
@@ -90,21 +118,41 @@
 			class="rounded-2xl border border-border bg-secondary p-6"
 			style="animation: fade-up 0.6s ease-out 0.2s forwards; opacity: 0;"
 		>
-			<h3
-				class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
-			>
-				<RadioIcon class="h-4 w-4 text-accent" />
-				Now Playing
-			</h3>
-			<div class="flex items-center gap-4">
-				<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
-					<RadioIcon class="h-8 w-8 text-muted-foreground" />
+			{#if data.room.status === 'missing_credentials'}
+				<h3
+					class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
+				>
+					Credentials Missing
+				</h3>
+
+				<div class="flex items-center gap-4">
+					<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
+						<KeyRound class="h-8 w-8 text-muted-foreground" />
+					</div>
+					<div>
+						<p class="font-bold text-foreground">Waiting for credentials...</p>
+						<p class="text-sm text-muted-foreground">
+							Please log in to your Spotify account to start playing music
+						</p>
+					</div>
 				</div>
-				<div>
-					<p class="font-bold text-foreground">Waiting for votes...</p>
-					<p class="text-sm text-muted-foreground">The top-voted track will play next</p>
+			{:else}
+				<h3
+					class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
+				>
+					<RadioIcon class="h-4 w-4 text-accent" />
+					Now Playing
+				</h3>
+				<div class="flex items-center gap-4">
+					<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
+						<RadioIcon class="h-8 w-8 text-muted-foreground" />
+					</div>
+					<div>
+						<p class="font-bold text-foreground">Waiting for votes...</p>
+						<p class="text-sm text-muted-foreground">The top-voted track will play next</p>
+					</div>
 				</div>
-			</div>
+			{/if}
 		</div>
 	</div>
 </div>

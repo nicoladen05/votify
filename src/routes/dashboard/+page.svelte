@@ -18,9 +18,14 @@
 		ZapIcon
 	} from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
+	import CreateRoomDialog from '$lib/compenents/dashboard/CreateRoomDialog.svelte';
+	import type { PageProps } from './$types';
+	import { enhance } from '$app/forms';
+	import { spotifyAuthUrl } from '$lib';
 
-	type Room = { id: string; name: string; status: 'live' | 'offline' };
 	type Plan = 'free' | 'pro' | 'premium';
+
+	const { data }: PageProps = $props();
 
 	const sidebarItems = [
 		{ icon: LayoutDashboardIcon, label: 'Dashboard', path: '/dashboard' },
@@ -28,10 +33,8 @@
 		{ icon: SettingsIcon, label: 'Settings', path: '/dashboard' }
 	] as const;
 
-	const rooms: Room[] = [
-		{ id: '1', name: 'Friday Night Vibes', status: 'live' },
-		{ id: '2', name: 'Saturday Night Vibes', status: 'offline' }
-	];
+	const rooms = $derived(data.rooms);
+
 	const plan: Plan = 'premium';
 
 	const planBadges = {
@@ -41,7 +44,18 @@
 	};
 
 	const badge = planBadges[plan];
-	const maxRooms = plan === 'free' ? 1 : plan === 'pro' ? 5 : Number.POSITIVE_INFINITY;
+	// const maxRooms = plan === 'free' ? 1 : plan === 'pro' ? 5 : Number.POSITIVE_INFINITY;
+	const maxRooms = 5;
+
+	let isCreateRoomDialogOpen = $state(false);
+
+	function openCreateRoomDialog() {
+		isCreateRoomDialogOpen = true;
+	}
+
+	function closeCreateRoomDialog() {
+		isCreateRoomDialogOpen = false;
+	}
 </script>
 
 <div class="flex min-h-screen bg-primary">
@@ -56,7 +70,7 @@
 					href={resolve(item.path)}
 					class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
 				>
-					<svelte:component this={item.icon} class="h-4 w-4" />
+					<item.icon class="h-4 w-4" />
 					{item.label}
 				</a>
 			{/each}
@@ -79,14 +93,19 @@
 			<div
 				class={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium ${badge.color}`}
 			>
-				<svelte:component this={badge.icon} class="h-3.5 w-3.5" />
+				<badge.icon class="h-3.5 w-3.5" />
 				{badge.label} Plan
 			</div>
 		</div>
 
 		<div class="mb-6 flex items-center justify-between">
 			<h2 class="text-xl font-bold text-foreground">My Rooms</h2>
-			<Button variant="hero" size="sm" disabled={rooms.length >= maxRooms}>
+			<Button
+				variant="hero"
+				size="sm"
+				disabled={rooms.length >= maxRooms}
+				onclick={openCreateRoomDialog}
+			>
 				<PlusIcon class="mr-1 h-4 w-4" />
 				Create Room
 			</Button>
@@ -97,7 +116,7 @@
 				<div class="card-hover rounded-xl border border-border bg-secondary p-6">
 					<div class="mb-4 flex items-center justify-between">
 						<h3 class="font-bold text-foreground">{room.name}</h3>
-						<span
+						<!-- <span
 							class={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
 								room.status === 'live'
 									? 'bg-accent/20 text-accent'
@@ -110,7 +129,7 @@
 								}`}
 							></span>
 							{room.status === 'live' ? 'Live' : 'Offline'}
-						</span>
+						</span> -->
 					</div>
 					<div class="flex items-center gap-2">
 						<a href={resolve(`/room/${room.id}`)}>
@@ -133,13 +152,17 @@
 						>
 							<BarChart3Icon class="h-4 w-4" />
 						</Button>
-						<Button
-							variant="ghost"
-							size="icon"
-							class="h-8 w-8 text-muted-foreground hover:bg-transparent hover:text-destructive"
-						>
-							<Trash2Icon class="h-4 w-4" />
-						</Button>
+						<form method="post" action="?/deleteRoom" use:enhance>
+							<input value={room.id} name="room-id" type="hidden" />
+							<Button
+								variant="ghost"
+								type="submit"
+								size="icon"
+								class="hover:color-destructive h-8 w-8 text-muted-foreground hover:bg-transparent"
+							>
+								<Trash2Icon class="h-4 w-4" />
+							</Button>
+						</form>
 					</div>
 				</div>
 			{/each}
@@ -160,21 +183,36 @@
 			{/if}
 		</div>
 
-		<div
-			class="mt-10 flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
-		>
-			<div class="flex items-center gap-4">
-				<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-					<RadioIcon class="h-6 w-6 text-accent" />
+		{#if !data.hasConnectedSpotify}
+			<div
+				class="mt-10 flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
+			>
+				<div class="flex items-center gap-4">
+					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+						<RadioIcon class="h-6 w-6 text-accent" />
+					</div>
+					<div>
+						<h3 class="font-bold text-foreground">Spotify Connection</h3>
+						<p class="text-sm text-muted-foreground">
+							Connect your account to start playing music in rooms.
+						</p>
+					</div>
 				</div>
-				<div>
-					<h3 class="font-bold text-foreground">Spotify Connection</h3>
-					<p class="text-sm text-muted-foreground">
-						Connect your account to start playing music in rooms.
-					</p>
-				</div>
+
+				<Button
+					variant="hero"
+					size="sm"
+					onclick={() => {
+						window.location.href = spotifyAuthUrl;
+					}}>Connect Spotify</Button
+				>
 			</div>
-			<Button variant="hero" size="sm">Connect Spotify</Button>
-		</div>
+		{/if}
+
+		<CreateRoomDialog
+			open={isCreateRoomDialogOpen}
+			onClose={closeCreateRoomDialog}
+			createAction="?/createRoom"
+		/>
 	</main>
 </div>
