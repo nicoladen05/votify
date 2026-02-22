@@ -37,7 +37,13 @@ export const songQueueItem = pgTable(
 		title: text('title').notNull(),
 		artist: text('artist').notNull()
 	},
-	(table) => [primaryKey({ columns: [table.room_id, table.song_id] })]
+	(table) => [
+		primaryKey({ columns: [table.room_id, table.song_id] }),
+		foreignKey({
+			columns: [table.room_id],
+			foreignColumns: [room.id]
+		}).onDelete('cascade')
+	]
 );
 
 export const guest = pgTable('guest', {
@@ -79,7 +85,11 @@ export const room = pgTable(
 		foreignKey({
 			columns: [table.userId],
 			foreignColumns: [user.id]
-		}).onDelete('cascade')
+		}).onDelete('cascade'),
+		foreignKey({
+			columns: [table.spotifyTokens],
+			foreignColumns: [spotifyTokens.id]
+		}).onDelete('set null')
 	]
 );
 
