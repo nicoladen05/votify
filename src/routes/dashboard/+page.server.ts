@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db';
 import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
+import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
 import type { Actions, PageServerLoad } from './$types';
 import { eq, and } from 'drizzle-orm';
 
@@ -37,6 +38,8 @@ export const actions: Actions = {
 	deleteRoom: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const roomId = parseInt(formData.get('room-id') as string);
+
+		stopAndRemoveRoomWorker(roomId);
 
 		await db.delete(room).where(and(eq(room.id, roomId), eq(room.userId, locals.user!.id)));
 	}

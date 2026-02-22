@@ -42,6 +42,21 @@ export function ensureRoomWorker({ roomId, tokenId }: { roomId: number; tokenId:
 	}
 }
 
+/**
+ * Stop and remove room worker.
+ * @param roomId The ID of the room to stop and remove.
+ */
+export function stopAndRemoveRoomWorker(roomId: number) {
+	if (!roomWatchers.has(roomId)) return;
+
+	const state = roomWatchers.get(roomId);
+	clearTimeout(state?.pollInterval);
+	state?.clients.clear();
+
+	roomWatchers.delete(roomId);
+	roomClosedMap.delete(roomId);
+}
+
 export function registerClient(roomId: number, cb: ClientCallback) {
 	const state = getOrCreateRoomState(roomId);
 	state.clients.add(cb);
