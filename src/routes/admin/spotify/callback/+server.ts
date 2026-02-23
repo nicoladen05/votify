@@ -34,5 +34,5 @@ export async function GET({ url, locals }) {
 
 	await setAccessToken(data.access_token, data.expires_in, data.refresh_token, locals.user.id);
 
-	return redirect(303, '/admin');
+	return redirect(303, '/dashboard');
 }
