@@ -7,6 +7,8 @@ import { error } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const roomIdParam = parseInt(params.roomId);
 
+	if (!Number.isInteger(roomIdParam) || roomIdParam <= 0) error(404, 'This room does not exist');
+
 	const rooms = await db.select().from(roomTable).where(eq(roomTable.id, roomIdParam));
 	const room = rooms[0];
 
