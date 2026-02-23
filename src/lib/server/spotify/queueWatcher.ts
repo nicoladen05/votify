@@ -188,7 +188,7 @@ async function pollRoom(roomId: number) {
 
 			if (nextSong[0]) {
 				// Keep current track and append top-ranked room track as next.
-				await fetch('https://api.spotify.com/v1/me/player/play', {
+				const response = await fetch('https://api.spotify.com/v1/me/player/play', {
 					method: 'PUT',
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -200,12 +200,17 @@ async function pollRoom(roomId: number) {
 					})
 				});
 
-				// Remove only the consumed queue entry in this room.
-				await db
-					.delete(songQueueItem)
-					.where(
-						and(eq(songQueueItem.room_id, roomId), eq(songQueueItem.song_id, nextSong[0].song_id))
-					);
+				if (response.ok) {
+					// Remove only the consumed queue entry in this room.
+					await db
+						.delete(songQueueItem)
+						.where(
+							and(eq(songQueueItem.room_id, roomId), eq(songQueueItem.song_id, nextSong[0].song_id))
+						);
+				} else {
+					console.error('Failed to play next song');
+					state.nextTrackAdded = false;
+				}
 			}
 		}
 
