@@ -222,8 +222,8 @@
 					}}>Connect Spotify</Button
 				>
 			{:else}
-				<form method="post" action="?/logoutSpotify" class="flex justify-end">
-					<Button variant="destructive" size="sm">Disconnect Spotify</Button>
+				<form method="post" action="?/logoutSpotify" class="flex justify-end" use:enhance>
+					<Button type="submit" variant="destructive" size="sm">Disconnect Spotify</Button>
 				</form>
 			{/if}
 		</div>
