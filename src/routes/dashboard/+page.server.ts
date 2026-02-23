@@ -1,6 +1,7 @@
 import { db } from '$lib/server/db';
 import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
+import { error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { eq, and } from 'drizzle-orm';
 
@@ -23,7 +24,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
 	createRoom: async ({ request, locals }) => {
 		const formData = await request.formData();
+
 		const roomName = formData.get('room-name') as string;
+		if (!roomName) error(400, 'Room name is required');
+
 		const userId = locals.user!.id;
 		const token = await db
 			.select({ id: spotifyTokensTable.id })
