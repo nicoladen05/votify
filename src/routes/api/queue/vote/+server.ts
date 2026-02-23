@@ -20,9 +20,9 @@ export const POST: RequestHandler = async ({ request, cookies, url }) => {
 	const is_upvote = data.is_upvote;
 	const guest_id = cookies.get('guest_id');
 
-	if (!roomId) return json({ success: false, message: 'Missing roomId' });
-	if (!song_id) return json({ success: false, message: 'Missing parameters' });
-	if (!guest_id) return json({ success: false, message: 'No cookie found' });
+	if (!roomId) return json({ success: false, message: 'Missing roomId' }, { status: 400 });
+	if (!song_id) return json({ success: false, message: 'Missing parameters' }, { status: 400 });
+	if (!guest_id) return json({ success: false, message: 'No cookie found' }, { status: 400 });
 
 	await db.insert(votes).values({
 		room_id: roomId,
@@ -40,9 +40,9 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
 	const is_upvote = data.is_upvote;
 	const guest_id = cookies.get('guest_id');
 
-	if (!roomId) return json({ success: false, message: 'Missing roomId' });
-	if (!song_id) return json({ success: false, message: 'Missing parameters' });
-	if (!guest_id) return json({ success: false, message: 'No cookie found' });
+	if (!roomId) return json({ success: false, message: 'Missing roomId' }, { status: 400 });
+	if (!song_id) return json({ success: false, message: 'Missing parameters' }, { status: 400 });
+	if (!guest_id) return json({ success: false, message: 'No cookie found' }, { status: 400 });
 
 	await db
 		.update(votes)
@@ -56,8 +56,8 @@ export const PATCH: RequestHandler = async ({ request, cookies, url }) => {
 export const GET: RequestHandler = async ({ cookies, url }) => {
 	const roomId = getRoomId(url);
 	const guest_cookie = cookies.get('guest_id');
-	if (!roomId) return json({ success: false, message: 'Missing roomId' });
-	if (!guest_cookie) return json({ success: false, message: 'No cookie found' });
+	if (!roomId) return json({ success: false, message: 'Missing roomId' }, { status: 400 });
+	if (!guest_cookie) return json({ success: false, message: 'No cookie found' }, { status: 400 });
 	const data = await db
 		.select()
 		.from(votes)
@@ -71,9 +71,9 @@ export const DELETE: RequestHandler = async ({ request, cookies, url }) => {
 	const song_id = data.song_id;
 	const guest_cookie = cookies.get('guest_id');
 
-	if (!roomId) return json({ success: false, message: 'Missing roomId' });
-	if (!song_id) return json({ success: false, message: 'Missing parameters' });
-	if (!guest_cookie) return json({ success: false, message: 'No cookie found' });
+	if (!roomId) return json({ success: false, message: 'Missing roomId' }, { status: 400 });
+	if (!song_id) return json({ success: false, message: 'Missing parameters' }, { status: 400 });
+	if (!guest_cookie) return json({ success: false, message: 'No cookie found' }, { status: 400 });
 
 	await db
 		.delete(votes)
