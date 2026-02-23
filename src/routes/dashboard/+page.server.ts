@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
-import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
+import { room, spotifyTokens, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { eq, and } from 'drizzle-orm';
 
@@ -17,9 +17,26 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.where(eq(spotifyTokensTable.userId, locals.user!.id));
 
 	const hasConnectedSpotify = spotifyTokens.length > 0;
+	const user = await getAccountData();
 
-	return { rooms, hasConnectedSpotify };
+	return { rooms, hasConnectedSpotify, user };
 };
+
+async function getAccountData(): Promise<{ name: string; image_url: string } | null> {
+	const spotifyCredentials = await db.select().from(spotifyTokens);
+
+	if (spotifyCredentials.length === 1) {
+		const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {
+			headers: { Authorization: `Bearer ${spotifyCredentials[0].access_token}` }
+		});
+
+		const userProfile = await userProfileRequest.json();
+
+		return { name: userProfile.display_name, image_url: userProfile.images[0].url };
+	} else {
+		return null;
+	}
+}
 
 export const actions: Actions = {
 	createRoom: async ({ request, locals }) => {
@@ -46,5 +63,9 @@ export const actions: Actions = {
 		stopAndRemoveRoomWorker(roomId);
 
 		await db.delete(room).where(and(eq(room.id, roomId), eq(room.userId, locals.user!.id)));
+	},
+	logoutSpotify: async () => {
+		await db.delete(spotifyTokens);
+		return redirect(303, '/dashboard');
 	}
 };

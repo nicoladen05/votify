@@ -183,11 +183,12 @@
 			{/if}
 		</div>
 
-		{#if !data.hasConnectedSpotify}
-			<div
-				class="mt-10 flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
-			>
-				<div class="flex items-center gap-4">
+		<!-- {#if !data.hasConnectedSpotify} -->
+		<div
+			class="mt-10 flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
+		>
+			<div class="flex items-center gap-4">
+				{#if !data.hasConnectedSpotify}
 					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
 						<RadioIcon class="h-6 w-6 text-accent" />
 					</div>
@@ -197,8 +198,22 @@
 							Connect your account to start playing music in rooms.
 						</p>
 					</div>
-				</div>
+				{:else}
+					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+						<img
+							src={data.user!.image_url}
+							alt="User avatar"
+							class="h-12 w-12 rounded-full object-cover"
+						/>
+					</div>
+					<div>
+						<p class="font-bold text-foreground">{data.user!.name}</p>
+						<p class="text-sm text-muted-foreground">Authorized Spotify account</p>
+					</div>
+				{/if}
+			</div>
 
+			{#if !data.hasConnectedSpotify}
 				<Button
 					variant="hero"
 					size="sm"
@@ -206,8 +221,13 @@
 						window.location.href = spotifyAuthUrl;
 					}}>Connect Spotify</Button
 				>
-			</div>
-		{/if}
+			{:else}
+				<form method="post" action="?/logoutSpotify" class="flex justify-end">
+					<Button variant="destructive" size="sm">Disconnect Spotify</Button>
+				</form>
+			{/if}
+		</div>
+		<!-- {/if} -->
 
 		<CreateRoomDialog
 			open={isCreateRoomDialogOpen}
