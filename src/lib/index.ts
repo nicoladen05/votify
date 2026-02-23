@@ -2,7 +2,7 @@
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
 
 const queryparams = new URLSearchParams({
-	cliend_id: PUBLIC_SPOTIFY_CLIENT_ID,
+	client_id: PUBLIC_SPOTIFY_CLIENT_ID,
 	response_type: 'code',
 	redirect_uri: 'http://127.0.0.1:5173/admin/spotify/callback',
 	scope: 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
