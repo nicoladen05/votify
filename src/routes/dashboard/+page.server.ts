@@ -6,18 +6,25 @@ import type { Actions, PageServerLoad } from './$types';
 import { eq, and } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const rooms = await db
+	const roomsPromise = db
 		.select({ id: room.id, name: room.name })
 		.from(room)
 		.where(eq(room.userId, locals.user!.id));
 
-	const spotifyTokens = await db
+	const spotifyTokensPromise = db
 		.select()
 		.from(spotifyTokensTable)
 		.where(eq(spotifyTokensTable.userId, locals.user!.id));
 
+	const userPromise = getAccountData();
+
+	const [rooms, spotifyTokens, user] = await Promise.all([
+		roomsPromise,
+		spotifyTokensPromise,
+		userPromise
+	]);
+
 	const hasConnectedSpotify = spotifyTokens.length > 0;
-	const user = await getAccountData();
 
 	return { rooms, hasConnectedSpotify, user };
 };
@@ -29,6 +36,8 @@ async function getAccountData(): Promise<{ name: string; image_url: string } | n
 		const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {
 			headers: { Authorization: `Bearer ${spotifyCredentials[0].access_token}` }
 		});
+
+		if (!userProfileRequest.ok) return null;
 
 		const userProfile = await userProfileRequest.json();
 

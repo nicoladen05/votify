@@ -201,13 +201,13 @@
 				{:else}
 					<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
 						<img
-							src={data.user!.image_url}
+							src={data.user?.image_url}
 							alt="User avatar"
 							class="h-12 w-12 rounded-full object-cover"
 						/>
 					</div>
 					<div>
-						<p class="font-bold text-foreground">{data.user!.name}</p>
+						<p class="font-bold text-foreground">{data.user?.name}</p>
 						<p class="text-sm text-muted-foreground">Authorized Spotify account</p>
 					</div>
 				{/if}
