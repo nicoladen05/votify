@@ -1,7 +1,7 @@
 import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
 import { db } from '$lib/server/db';
-import { spotifyTokens } from '$lib/server/db/schema';
+import { room, spotifyTokens } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
 async function getAccessTokenFromRefreshToken(
@@ -46,12 +46,18 @@ export async function setAccessToken(
 ) {
 	const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
-	await db.insert(spotifyTokens).values({
-		access_token: accessToken,
-		refresh_token: refreshToken,
-		expires_at: expiresAt,
-		userId
-	});
+	const spotifyToken = await db
+		.insert(spotifyTokens)
+		.values({
+			access_token: accessToken,
+			refresh_token: refreshToken,
+			expires_at: expiresAt,
+			userId
+		})
+		.returning({ id: spotifyTokens.id });
+
+	// Set this token on all rooms owned by the current user
+	await db.update(room).set({ spotifyTokens: spotifyToken[0].id }).where(eq(room.userId, userId));
 }
 
 /**

@@ -12,6 +12,7 @@ export const actions = {
 			return { status: 400, body: { error: 'Email and password are required' } };
 
 		let authResponse;
+
 		if (action === 'login') {
 			authResponse = await auth.api.signInEmail({ body: { email, password }, asResponse: true });
 		} else if (action === 'signup') {

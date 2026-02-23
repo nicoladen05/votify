@@ -64,6 +64,7 @@ export const actions: Actions = {
 
 		await db.delete(room).where(and(eq(room.id, roomId), eq(room.userId, locals.user!.id)));
 	},
+
 	logoutSpotify: async () => {
 		await db.delete(spotifyTokens);
 		return redirect(303, '/dashboard');
