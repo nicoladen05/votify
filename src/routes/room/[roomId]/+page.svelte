@@ -8,7 +8,6 @@
 		CheckIcon,
 		CopyIcon,
 		ExternalLinkIcon,
-		FileExclamationPoint,
 		KeyRound,
 		RadioIcon
 	} from '@lucide/svelte';
