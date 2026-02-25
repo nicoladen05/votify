@@ -21,16 +21,39 @@
 		<h3 class="font-bold text-foreground">{room.name}</h3>
 	</div>
 	<div class="flex items-center gap-2">
-		<Button
-			variant="hero"
-			size="sm"
-			onclick={(e) => {
-				e.stopPropagation();
-			}}
-		>
-			<PlayIcon class="mr-1 h-3 w-3" />
-			Launch
-		</Button>
+		{#if room.state === 'offline'}
+			<form method="post" action="?/launchAction" use:enhance>
+				<input value={room.id} name="room-id" type="hidden" />
+				<input value={room.spotifyTokens} name="spotify-id" type="hidden" />
+				<Button
+					variant="hero"
+					size="sm"
+					type="submit"
+					onclick={(e) => {
+						e.stopPropagation();
+					}}
+				>
+					<PlayIcon class="mr-1 h-3 w-3" />
+					Launch
+				</Button>
+			</form>
+		{:else}
+			<form method="post" action="?/stopAction" use:enhance>
+				<input value={room.id} name="room-id" type="hidden" />
+				<input value={room.spotifyTokens} name="spotify-id" type="hidden" />
+				<Button
+					variant="destructive"
+					size="sm"
+					type="submit"
+					onclick={(e) => {
+						e.stopPropagation();
+					}}
+				>
+					<CircleStop class="mr-1 h-3 w-3" />
+					Stop
+				</Button>
+			</form>
+		{/if}
 
 		<Button
 			variant="ghost"
