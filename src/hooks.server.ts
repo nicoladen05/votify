@@ -15,8 +15,10 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 
 	const routeId = event.route.id;
 	const isPublic = routeId ? PUBLIC_ROUTES.includes(routeId) : false;
+	const isAuthRoute =
+		routeId?.startsWith('/api/auth') || event.url.pathname.startsWith('/api/auth');
 
-	if (!event.locals.user && !isPublic) {
+	if (!event.locals.user && !isPublic && !isAuthRoute) {
 		return redirect(302, '/auth');
 	}
 

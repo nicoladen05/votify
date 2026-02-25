@@ -16,7 +16,7 @@ export const auth = betterAuth({
 	},
 
 	emailAndPassword: { enabled: true, requireEmailVerification: true },
-  user: { changeEmail: { enabled: true }, fields: { emailVerified: 'email_verified'} },
+  user: { changeEmail: { enabled: true } },
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
