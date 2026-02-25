@@ -2,7 +2,7 @@
 	import type { Pathname } from '$app/types';
 	import { LogOutIcon, MusicIcon, TextAlignJustify } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
-	import { createContext, type Component, type Snippet } from 'svelte';
+	import { type Component, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { setMobileSidebarOpenButton } from '$lib/context/sidebar-context';
 
