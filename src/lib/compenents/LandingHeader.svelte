@@ -11,10 +11,10 @@
 			<span class="text-xl font-bold text-foreground">Votify</span>
 		</a>
 		<div class="flex items-center gap-3">
-			<a href={resolve('/auth')}>
+			<a href={resolve("/auth/login")}>
 				<Button variant="ghost" size="sm">Log in</Button>
 			</a>
-			<a href={resolve('/auth')}>
+			<a href={resolve("/auth/signup")}>
 				<Button variant="hero" size="sm">Get Started</Button>
 			</a>
 		</div>

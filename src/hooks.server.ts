@@ -3,7 +3,7 @@ import { auth } from '$lib/server/auth';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
-const PUBLIC_ROUTES = ['/', '/auth', '/room/[roomId]/guest'];
+const PUBLIC_ROUTES = ['/', '/auth', '/auth/login', '/auth/signup', '/room/[roomId]/guest'];
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	const session = await auth.api.getSession({ headers: event.request.headers });
@@ -19,7 +19,7 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 		routeId?.startsWith('/api/auth') || event.url.pathname.startsWith('/api/auth');
 
 	if (!event.locals.user && !isPublic && !isAuthRoute) {
-		return redirect(302, '/auth');
+		return redirect(302, '/auth/login');
 	}
 
 	return svelteKitHandler({ event, resolve, auth, building });

@@ -1,14 +1,30 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, MusicIcon, User } from '@lucide/svelte';
+	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, MusicIcon, UserIcon } from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import Input from '$lib/compenents/ui/Input.svelte';
-	import type { PageProps } from './$types';
 
-	const { form }: PageProps = $props();
+	type Mode = 'login' | 'signup';
+	type AuthFormData = { error?: string } | null | undefined;
 
-	let isLogin = $state(true);
+	interface Props {
+		mode: Mode;
+		form?: AuthFormData;
+	}
+
+	const { mode, form }: Props = $props();
+
 	let showPassword = $state(false);
+
+	const isLogin = $derived(mode === 'login');
+	const heading = $derived(isLogin ? 'Welcome back' : 'Create your account');
+	const subheading = $derived(
+		isLogin ? 'Log in to manage your rooms' : 'Start hosting music rooms today'
+	);
+	const submitText = $derived(isLogin ? 'Log In' : 'Create Account');
+	const switchPrompt = $derived(isLogin ? "Don't have an account?" : 'Already have an account?');
+	const switchText = $derived(isLogin ? 'Sign up' : 'Log in');
+	const switchHref = $derived(isLogin ? '/auth/signup' : '/auth/login');
 </script>
 
 <div class="relative flex min-h-screen items-center justify-center bg-primary p-4">
@@ -25,12 +41,8 @@
 		</div>
 
 		<div class="rounded-2xl border border-border bg-secondary p-8 shadow-xl">
-			<h2 class="mb-2 text-center text-2xl font-bold text-foreground">
-				{isLogin ? 'Welcome back' : 'Create your account'}
-			</h2>
-			<p class="mb-8 text-center text-sm text-muted-foreground">
-				{isLogin ? 'Log in to manage your rooms' : 'Start hosting music rooms today'}
-			</p>
+			<h2 class="mb-2 text-center text-2xl font-bold text-foreground">{heading}</h2>
+			<p class="mb-8 text-center text-sm text-muted-foreground">{subheading}</p>
 
 			<a href={resolve('/dashboard')}>
 				<Button variant="hero-outline" class="mb-6 w-full gap-2" disabled>
@@ -53,12 +65,13 @@
 			</div>
 
 			<form class="space-y-4" method="post">
-				<input type="hidden" name="action" value={isLogin ? 'login' : 'signup'} />
 				{#if !isLogin}
 					<div class="relative">
-						<User class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+						<UserIcon
+							class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+						/>
 						<Input
-							type="username"
+							type="text"
 							name="username"
 							placeholder="Username"
 							class="bg-primary pl-10"
@@ -66,6 +79,7 @@
 						/>
 					</div>
 				{/if}
+
 				<div class="relative">
 					<MailIcon
 						class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -78,6 +92,7 @@
 						required
 					/>
 				</div>
+
 				<div class="relative">
 					<LockIcon
 						class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
@@ -103,24 +118,17 @@
 				</div>
 
 				{#if form?.error}
-					<p class="my-6 text-center text-sm text-destructive">
-						{form?.error}
-					</p>
+					<p class="my-6 text-center text-sm text-destructive">{form.error}</p>
 				{/if}
 
-				<Button variant="hero" class="w-full" type="submit">
-					{isLogin ? 'Log In' : 'Create Account'}
-				</Button>
+				<Button variant="hero" class="w-full" type="submit">{submitText}</Button>
 			</form>
 
 			<p class="mt-6 text-center text-sm text-muted-foreground">
-				{isLogin ? "Don't have an account?" : 'Already have an account?'}
-				<button
-					onclick={() => (isLogin = !isLogin)}
-					class="ml-1 font-medium text-accent hover:underline"
+				{switchPrompt}
+				<a href={resolve(switchHref)} class="ml-1 font-medium text-accent hover:underline"
+					>{switchText}</a
 				>
-					{isLogin ? 'Sign up' : 'Log in'}
-				</button>
 			</p>
 		</div>
 	</div>
