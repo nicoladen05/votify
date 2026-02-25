@@ -17,6 +17,7 @@
 	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	import { spotifyAuthUrl } from '$lib';
+	import { getMobileSidebarOpenButton } from '$lib/context/sidebar-context';
 
 	type Plan = 'free' | 'pro' | 'premium';
 
@@ -45,18 +46,23 @@
 	function closeCreateRoomDialog() {
 		isCreateRoomDialogOpen = false;
 	}
+
+	const openSidebarButton = getMobileSidebarOpenButton();
 </script>
 
-<div class="mb-10 flex flex-wrap items-start justify-between gap-4">
-	<div>
-		<h1 class="mb-1 text-3xl font-bold text-foreground">Welcome back 👋</h1>
-		<p class="text-muted-foreground">Manage your music rooms and settings.</p>
-	</div>
-	<div
-		class={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium ${badge.color}`}
-	>
-		<badge.icon class="h-3.5 w-3.5" />
-		{badge.label} Plan
+<div class="flex w-full items-start gap-6">
+	{@render openSidebarButton('mt-1.5')}
+	<div class="mb-10 flex w-full flex-wrap items-start justify-between gap-4">
+		<div>
+			<h1 class="mb-1 text-3xl font-bold text-foreground">Welcome back 👋</h1>
+			<p class="text-muted-foreground">Manage your music rooms and settings.</p>
+		</div>
+		<div
+			class={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium ${badge.color}`}
+		>
+			<badge.icon class="h-3.5 w-3.5" />
+			{badge.label} Plan
+		</div>
 	</div>
 </div>
 
