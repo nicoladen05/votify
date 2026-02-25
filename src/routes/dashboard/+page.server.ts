@@ -2,8 +2,8 @@ import { db } from '$lib/server/db';
 import { room, spotifyTokens, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
 import { error, redirect } from '@sveltejs/kit';
+import { and, eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
-import { eq, and } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const roomsPromise = db
@@ -62,7 +62,7 @@ export const actions: Actions = {
 			.limit(1)
 			.then((rows) => rows[0]);
 
-		const insertedRoom = await db
+		await db
 			.insert(room)
 			.values({ name: roomName, userId, spotifyTokens: token?.id ?? null })
 			.returning({ id: room.id });

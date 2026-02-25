@@ -1,6 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { PlayIcon, Settings2Icon, Trash2Icon } from '@lucide/svelte';
+	import { PlayIcon, Settings2Icon, Trash2Icon, CircleStop } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import Button from '../ui/Button.svelte';
 	import { goto } from '$app/navigation';
