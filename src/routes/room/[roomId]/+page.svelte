@@ -13,13 +13,16 @@
 	} from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import type { PageProps } from './$types';
-
+	import ConnectionBar from '$lib/compenents/room/ConnectionBar.svelte';
+	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
 	const { data }: PageProps = $props();
 
 	const votePath = $derived(`/room/${$page.params.roomId}/guest`);
+	const hasCredentials = $derived(data.room.status.toString() !== 'missing_credentials');
 
 	let copied = $state(false);
 	let roomLink = $state('');
+	let RoomState = $derived(data.room.status);
 
 	onMount(() => {
 		roomLink = `${window.location.origin}${votePath}`;
@@ -45,14 +48,14 @@
 		</a>
 
 		<div class="mb-10 text-center" style="animation: fade-up 0.6s ease-out forwards;">
-			{#if data.room.status === 'live'}
+			{#if RoomState === 'live'}
 				<div
 					class="glow-green-sm animate-glow-pulse mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-2 text-sm font-bold text-accent"
 				>
 					<span class="h-2 w-2 animate-pulse rounded-full bg-accent"></span>
 					Room is Live
 				</div>
-			{:else if data.room.status === 'offline'}
+			{:else if RoomState === 'offline'}
 				<div
 					class="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary/80 px-4 py-2 text-sm font-bold text-muted-foreground"
 				>
@@ -114,44 +117,37 @@
 		</div>
 
 		<div
-			class="rounded-2xl border border-border bg-secondary p-6"
+			class="flex flex-col gap-4 rounded-2xl border border-border bg-secondary p-6"
 			style="animation: fade-up 0.6s ease-out 0.2s forwards; opacity: 0;"
 		>
-			{#if data.room.status === 'missing_credentials'}
-				<h3
-					class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
-				>
-					Credentials Missing
-				</h3>
-
-				<div class="flex items-center gap-4">
-					<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
-						<KeyRound class="h-8 w-8 text-muted-foreground" />
-					</div>
-					<div>
-						<p class="font-bold text-foreground">Waiting for credentials...</p>
-						<p class="text-sm text-muted-foreground">
-							Please log in to your Spotify account to start playing music
-						</p>
-					</div>
-				</div>
-			{:else}
-				<h3
-					class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
-				>
-					<RadioIcon class="h-4 w-4 text-accent" />
-					Now Playing
-				</h3>
-				<div class="flex items-center gap-4">
-					<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
-						<RadioIcon class="h-8 w-8 text-muted-foreground" />
-					</div>
-					<div>
-						<p class="font-bold text-foreground">Waiting for votes...</p>
-						<p class="text-sm text-muted-foreground">The top-voted track will play next</p>
-					</div>
+			{#if hasCredentials}
+				<div>
+					<h3
+						class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
+					>
+						<RadioIcon class="h-4 w-4 text-accent" />
+						Now Playing
+					</h3>
+					<NowPlaying roomId={data.room.roomid} isGuest={false} />
 				</div>
 			{/if}
+			<div>
+				<h2
+					class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
+				>
+					<KeyRound class="h-4 w-4 text-accent" />
+					{#if hasCredentials}
+						Spotify Account
+					{:else}
+						Credentials Missing
+					{/if}
+				</h2>
+				<ConnectionBar
+					action="?/logoutSpotify"
+					hasConnectedSpotify={hasCredentials}
+					user={data.spotifyAccount}
+				/>
+			</div>
 		</div>
 	</div>
 </div>

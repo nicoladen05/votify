@@ -9,7 +9,8 @@ export async function GET({ url, locals }) {
 	}
 
 	const code = url.searchParams.get('code');
-	if (!code) throw redirect(303, '/admin');
+	const path = url.searchParams.get('state');
+	if (!code || !path) throw redirect(303, '/admin');
 
 	const header = {
 		Authorization: 'Basic ' + btoa(`${PUBLIC_SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
@@ -34,5 +35,5 @@ export async function GET({ url, locals }) {
 
 	await setAccessToken(data.access_token, data.expires_in, data.refresh_token, locals.user.id);
 
-	return redirect(303, '/dashboard');
+	return redirect(303, path);
 }

@@ -62,12 +62,16 @@ export const actions: Actions = {
 			.limit(1)
 			.then((rows) => rows[0]);
 
-		await db.insert(room).values({ name: roomName, userId, spotifyTokens: token?.id ?? null });
+		const insertedRoom = await db
+			.insert(room)
+			.values({ name: roomName, userId, spotifyTokens: token?.id ?? null })
+			.returning({ id: room.id });
 	},
 
 	deleteRoom: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const roomId = parseInt(formData.get('room-id') as string);
+		if (!formData) return;
 
 		stopAndRemoveRoomWorker(roomId);
 
