@@ -1,9 +1,9 @@
 import { db } from '$lib/server/db';
 import { room as roomTable, spotifyTokens } from '$lib/server/db/schema';
+import { getAccessTokenByTokenId } from '$lib/server/spotify';
+import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
-import { getAccessTokenByTokenId } from '$lib/server/spotify';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const roomIdParam = parseInt(params.roomId);
