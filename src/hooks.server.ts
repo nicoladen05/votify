@@ -1,14 +1,11 @@
-import { redirect, type Handle } from '@sveltejs/kit';
 import { building } from '$app/environment';
 import { auth } from '$lib/server/auth';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { generateAdminUser } from '$lib/server/generateAdminUser';
 
 const PUBLIC_ROUTES = ['/', '/auth', '/room/[roomId]/guest'];
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
-	generateAdminUser();
-
 	const session = await auth.api.getSession({ headers: event.request.headers });
 
 	if (session) {
