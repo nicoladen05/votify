@@ -3,6 +3,9 @@
 	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, MusicIcon, User } from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import Input from '$lib/compenents/ui/Input.svelte';
+	import type { PageProps } from './$types';
+
+	const { form }: PageProps = $props();
 
 	let isLogin = $state(true);
 	let showPassword = $state(false);
@@ -98,6 +101,13 @@
 						{/if}
 					</button>
 				</div>
+
+				{#if form?.error}
+					<p class="my-6 text-center text-sm text-destructive">
+						{form?.error}
+					</p>
+				{/if}
+
 				<Button variant="hero" class="w-full" type="submit">
 					{isLogin ? 'Log In' : 'Create Account'}
 				</Button>

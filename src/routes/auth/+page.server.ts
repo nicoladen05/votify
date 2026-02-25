@@ -17,7 +17,9 @@ export const actions = {
 			authResponse = await auth.api.signInEmail({ body: { email, password }, asResponse: true });
 		} else if (action === 'signup') {
 			const username = data.get('username')?.toString();
+
 			if (!username) return { status: 400, body: { error: 'Username is required' } };
+
 			authResponse = await auth.api.signUpEmail({
 				body: { name: username, email, password },
 				asResponse: true
@@ -30,6 +32,7 @@ export const actions = {
 			return redirect(303, '/dashboard');
 		} else {
 			const authError = await authResponse.json();
+
 			return fail(401, { error: authError.message });
 		}
 	}
