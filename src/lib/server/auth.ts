@@ -15,16 +15,19 @@ export const auth = betterAuth({
 		level: env.NODE_ENV === 'development' ? 'debug' : 'info'
 	},
 
-	emailAndPassword: { enabled: true },
-	user: { changeEmail: { enabled: true } },
+	emailAndPassword: { enabled: true, requireEmailVerification: true },
+  user: { changeEmail: { enabled: true }, fields: { emailVerified: 'email_verified'} },
   emailVerification: {
     sendOnSignUp: true,
+    autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
+      console.log("sending verification email to: ", user.email)
       resend.emails.send({
         from: "Votify <votify@skilldex.nicoladen.dev>",
         to: [user.email],
         subject: 'Verify your email',
         html: `<p>Click <a href="${url}">here</a> to verify your email.</p>`
       })
-  } }
+    }
+  }
 });
