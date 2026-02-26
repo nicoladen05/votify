@@ -48,8 +48,10 @@
 		{#if mobileSidebarOpen}
 			{@render openSidebarButton('mr-1.5')}
 		{/if}
-		<MusicIcon class="h-6 w-6 text-accent" />
-		<span class="text-lg font-bold text-foreground">Votify</span>
+		<a class="flex items-center gap-2 hover:cursor-pointer" href={resolve('/')}>
+			<MusicIcon class="h-6 w-6 text-accent" />
+			<span class="text-lg font-bold text-foreground">Votify</span>
+		</a>
 	</div>
 	<nav class="flex-1 space-y-1">
 		{#each items as item (item.path)}
