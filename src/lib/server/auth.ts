@@ -31,7 +31,20 @@ export const auth = betterAuth({
 		}
 	},
 
-	user: { changeEmail: { enabled: true } },
+	user: {
+		changeEmail: { enabled: true },
+		deleteUser: {
+			enabled: true,
+			sendDeleteAccountVerification: async ({ user, url }) => {
+				resend.emails.send({
+					from: 'Votify <votify@skilldex.nicoladen.dev>',
+					to: [user.email],
+					subject: 'Delete your account',
+					html: `<p>Click <a href="${url}">here</a> to delete your account. There is no way to undo this action.</p>`
+				});
+			}
+		}
+	},
 
 	emailVerification: {
 		sendOnSignUp: false, // To avoid sending email on spotify sign up, send it manually for email signup

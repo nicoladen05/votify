@@ -42,7 +42,11 @@
 	<p>You will receive an email with instructions on how to reset your password.</p>
 
 	<div class="mt-auto flex flex-col-reverse gap-2 pt-6 sm:flex-row sm:justify-end">
-		<Button variant="hero-outline">Cancel</Button>
+		<Button
+			variant="hero-outline"
+			class="hover:border-destructive! hover:bg-destructive/10! "
+			onclick={() => (resetDialogOpen = false)}>Cancel</Button
+		>
 
 		<form
 			method="post"
@@ -71,10 +75,29 @@
 		<Input id="delete" bind:value={deleteAccountConfirmationText} placeholder="Delete my account" />
 	</div>
 
+	<p class="mt-6">
+		After confirming, you will receive an email with a link to delete your account.
+	</p>
+
 	<div class="mt-auto flex flex-col-reverse gap-2 pt-6 sm:flex-row sm:justify-end">
-		<Button variant="hero-outline">Cancel</Button>
-		<Button variant="destructive" disabled={deleteAccountConfirmationText !== 'Delete my account'}
-			>Delete</Button
+		<Button
+			variant="hero-outline"
+			class="hover:border-destructive! hover:bg-destructive/10! "
+			onclick={() => (deletionDialogOpen = false)}>Cancel</Button
 		>
+
+		<form
+			method="post"
+			action="?/deleteAccount"
+			use:enhance={() => {
+				deletionDialogOpen = false;
+			}}
+		>
+			<Button
+				variant="destructive"
+				type="submit"
+				disabled={deleteAccountConfirmationText !== 'Delete my account'}>Delete</Button
+			>
+		</form>
 	</div>
 </Dialog>

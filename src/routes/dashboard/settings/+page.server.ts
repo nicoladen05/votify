@@ -38,5 +38,9 @@ export const actions: Actions = {
 			headers: request.headers,
 			body: { email: locals.user!.email, redirectTo: '/auth/reset-password' }
 		});
+	},
+
+	deleteAccount: async ({ request }) => {
+		await auth.api.deleteUser({ headers: request.headers, body: { callbackURL: '/' } });
 	}
 };
