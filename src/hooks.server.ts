@@ -1,9 +1,17 @@
 import { building } from '$app/environment';
+import type { Pathname } from '$app/types';
 import { auth } from '$lib/server/auth';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
-const PUBLIC_ROUTES = ['/', '/auth/login', '/auth/signup', '/auth/signup/complete', '/room/[roomId]/guest'];
+const PUBLIC_ROUTES: Pathname[] = [
+	'/',
+	'/auth/login',
+	'/auth/signup',
+	'/auth/signup/complete',
+	'/auth/forgot-password',
+	'/room/[roomId]/guest'
+];
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	const session = await auth.api.getSession({ headers: event.request.headers });

@@ -76,27 +76,40 @@
 			/>
 		</div>
 
-		<div class="relative">
-			<LockIcon class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-			<Input
-				type={showPassword ? 'text' : 'password'}
-				name="password"
-				placeholder="Password"
-				class="bg-primary pr-10 pl-10"
-				required
-			/>
-			<button
-				type="button"
-				onclick={() => (showPassword = !showPassword)}
-				class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-				aria-label="Toggle password visibility"
-			>
-				{#if showPassword}
-					<EyeOffIcon class="h-4 w-4" />
-				{:else}
-					<EyeIcon class="h-4 w-4" />
-				{/if}
-			</button>
+		<div>
+			<div class="relative">
+				<LockIcon class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+				<Input
+					type={showPassword ? 'text' : 'password'}
+					name="password"
+					placeholder="Password"
+					class="bg-primary pr-10 pl-10"
+					required
+				/>
+				<button
+					type="button"
+					onclick={() => (showPassword = !showPassword)}
+					class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+					aria-label="Toggle password visibility"
+				>
+					{#if showPassword}
+						<EyeOffIcon class="h-4 w-4" />
+					{:else}
+						<EyeIcon class="h-4 w-4" />
+					{/if}
+				</button>
+			</div>
+
+			{#if mode === 'login'}
+				<div class="mt-1 mr-0.5 flex justify-center text-center text-sm text-muted-foreground">
+					<p>
+						Forgot your
+						<a href={resolve('/auth/forgot-password')} class=" text-accent hover:underline"
+							>password</a
+						>?
+					</p>
+				</div>
+			{/if}
 		</div>
 
 		{#if form?.error}
