@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from '@lucide/svelte';
+	import { Check, EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import Input from '$lib/compenents/ui/Input.svelte';
 
@@ -101,13 +101,27 @@
 			</div>
 
 			{#if mode === 'login'}
-				<div class="mt-1 mr-0.5 flex justify-center text-center text-sm text-muted-foreground">
-					<p>
-						Forgot your
-						<a href={resolve('/auth/forgot-password')} class=" text-accent hover:underline"
-							>password</a
-						>?
-					</p>
+				<div class="mx-0.5 mt-1 flex justify-between">
+					<div class="flex items-center gap-1">
+						<input
+							type="checkbox"
+							id="remember"
+							name="remember"
+							class="peer h-4 w-4 appearance-none rounded-sm border border-border bg-secondary checked:bg-accent"
+						/>
+						<label for="remember" class="text-sm text-muted-foreground">Remember me</label>
+						<Check
+							class="pointer-events-none absolute h-4 w-4 text-primary opacity-0 peer-checked:opacity-100"
+						/>
+					</div>
+
+					<div class="flex justify-center text-center text-sm text-muted-foreground">
+						<p>
+							<a href={resolve('/auth/forgot-password')} class=" text-accent hover:underline"
+								>Forgot password</a
+							>
+						</p>
+					</div>
 				</div>
 			{/if}
 		</div>

@@ -7,13 +7,14 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const email = data.get('email')?.toString();
 		const password = data.get('password')?.toString();
+		const rememberMe = data.get('remember') === 'on';
 
 		if (!email || !password) {
 			return fail(400, { error: 'Email and password are required' });
 		}
 
 		const authResponse = await auth.api.signInEmail({
-			body: { email, password },
+			body: { email, password, rememberMe },
 			asResponse: true
 		});
 

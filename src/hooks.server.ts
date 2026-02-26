@@ -10,6 +10,7 @@ const PUBLIC_ROUTES: Pathname[] = [
 	'/auth/signup',
 	'/auth/signup/complete',
 	'/auth/forgot-password',
+	'/auth/reset-password',
 	'/room/[roomId]/guest'
 ];
 
