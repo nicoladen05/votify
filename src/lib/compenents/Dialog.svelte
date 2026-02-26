@@ -42,7 +42,7 @@
 					<div>
 						<h3 id="create-room-title" class="text-xl font-bold text-foreground">{title}</h3>
 						<p class="mt-1 text-sm text-muted-foreground">
-							{subtitle} test
+							{subtitle}
 						</p>
 					</div>
 					<Button

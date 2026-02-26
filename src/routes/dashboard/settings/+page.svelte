@@ -22,7 +22,7 @@
 	<div class="space-y-6">
 		<AccountSettings currentAccountData={data.accountData} />
 
-		<SpotifyAccounts />
+		<SpotifyAccounts spotifyAccounts={data.spotifyAccounts} isSettings={true} />
 
 		<DangerZone />
 	</div>

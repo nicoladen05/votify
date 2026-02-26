@@ -14,16 +14,19 @@
 	} from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
 	import type { PageProps } from './$types';
-	import ConnectionBar from '$lib/compenents/room/ConnectionBar.svelte';
 	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
+	import Dialog from '$lib/compenents/Dialog.svelte';
+	import { enhance } from '$app/forms';
+	import SpotifyAccounts from '$lib/compenents/settings/SpotifyAccounts.svelte';
 	const { data }: PageProps = $props();
 
-	const votePath = $derived(`/room/${page.params.roomId}/guest`);
+	const votePath = $derived(`/room/${data.room.roomid}/guest`);
 	const hasCredentials = $derived(data.room.status !== 'missing_credentials');
 
 	let copied = $state(false);
 	let roomLink = $state('');
 	let RoomState = $derived(data.room.status);
+	let isOpen = $state(false);
 	onMount(() => {
 		roomLink = `${window.location.origin}${votePath}`;
 	});
@@ -35,6 +38,14 @@
 			copied = false;
 		}, 2000);
 	};
+
+	function openDialog() {
+		isOpen = true;
+	}
+
+	function closeDialog() {
+		isOpen = false;
+	}
 </script>
 
 <div class="min-h-screen bg-primary p-4 md:p-10">
@@ -114,7 +125,7 @@
 						</Button>
 					</form>
 				{:else}
-					<a class="w-full" href={resolve(`/room/${page.params.roomId}/guest`)}>
+					<a class="w-full" href={resolve(`/room/${data.room.roomid}/guest`)}>
 						<Button variant="hero" class="w-full">
 							<ExternalLinkIcon class="mr-2 h-4 w-4" />
 							Open Guest View
@@ -126,7 +137,7 @@
 
 		<div
 			class="flex flex-col gap-4 rounded-2xl border border-border bg-secondary p-6"
-			style="animation: fade-up 0.6s ease-out 0.2s forwards; opacity: 0;"
+			style="animation: fade-up 0.6s ease-out 0.2s forwards; opacity: 0; will-change: opacity, transform;"
 		>
 			{#if hasCredentials}
 				<div>
@@ -150,12 +161,58 @@
 						Credentials Missing
 					{/if}
 				</h2>
-				<ConnectionBar
-					action="?/logoutSpotify"
-					hasConnectedSpotify={hasCredentials}
-					user={data.user}
-				/>
+				<div
+					class=" flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
+				>
+					<div class="flex items-center gap-4">
+						{#if !hasCredentials}
+							<div
+								class="flex min-h-12 min-w-12 items-center justify-center rounded-full bg-accent/10"
+							>
+								<RadioIcon class="h-6 w-6 text-accent" />
+							</div>
+							<div>
+								<h3 class="font-bold text-nowrap text-foreground">Spotify Connection</h3>
+								<p class="line-clamp-2 text-sm text-muted-foreground">
+									Connect your account to start playing music in rooms.
+								</p>
+							</div>
+						{:else}
+							<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+								<img
+									src={data.user?.account_img}
+									alt="User avatar"
+									class="h-12 w-12 rounded-full object-cover"
+								/>
+							</div>
+							<div>
+								<p class="font-bold text-foreground">{data.user?.account_name}</p>
+								<p class="text-sm text-muted-foreground">Authorized Spotify account</p>
+							</div>
+						{/if}
+					</div>
+
+					{#if !hasCredentials}
+						<Button
+							class="w-full text-nowrap md:w-auto"
+							variant="hero"
+							size="sm"
+							onclick={openDialog}>Connect Spotify</Button
+						>
+					{:else}
+						<form method="post" action="?/logoutSpotify" class="flex justify-end" use:enhance>
+							<input type="hidden" value={data.room.roomid} name="room-id" />
+							<Button type="submit" variant="destructive" class="text-nowrap" size="sm"
+								>Disconnect Spotify</Button
+							>
+						</form>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<Dialog bind:isOpen onClose={closeDialog}>
+	<SpotifyAccounts spotifyAccounts={data.spotifyAccounts} />
+</Dialog>

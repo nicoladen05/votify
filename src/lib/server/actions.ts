@@ -21,3 +21,14 @@ export async function stopRoom(event: RequestEvent) {
 
 	await db.update(room).set({ state: 'offline' }).where(eq(room.id, id));
 }
+
+export async function selectAccount(event: RequestEvent) {
+	const formData = await event.request.formData();
+	const roomid = parseInt(formData.get('room-id') as string);
+	const accountid = parseInt(formData.get('account-id') as string);
+
+	await db
+		.update(room)
+		.set({ spotifyTokens: accountid, state: 'offline' })
+		.where(eq(room.id, roomid));
+}

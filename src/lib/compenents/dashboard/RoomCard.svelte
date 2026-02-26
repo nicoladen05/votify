@@ -7,7 +7,7 @@
 	import Dialog from '../Dialog.svelte';
 	import SpotifyAccounts from '../settings/SpotifyAccounts.svelte';
 
-	const { room, action } = $props();
+	const { room, action, spotifyAccounts } = $props();
 
 	let isOpen = $state(false);
 	function handleButtonClick() {
@@ -107,5 +107,11 @@
 </div>
 
 <Dialog bind:isOpen onClose={handleMenuClose}>
-	<SpotifyAccounts />
+	<SpotifyAccounts
+		onSelect={() => {
+			isOpen = false;
+		}}
+		{spotifyAccounts}
+		roomid={room.id}
+	/>
 </Dialog>

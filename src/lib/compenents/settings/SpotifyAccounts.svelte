@@ -3,24 +3,15 @@
 	import Button from '../ui/Button.svelte';
 	import { spotifyAuthUrl } from '$lib';
 	import { page } from '$app/state';
+	import { enhance } from '$app/forms';
 
-	const spotifyAccounts = [
-		{
-			name: 'Nico Main',
-			email: 'nico.main@spotify.mock',
-			connectedAt: 'Connected 3 days ago'
-		},
-		{
-			name: 'Workout Vibes',
-			email: 'workout.vibes@spotify.mock',
-			connectedAt: 'Connected 2 weeks ago'
-		},
-		{
-			name: 'Sunday Chill',
-			email: 'sunday.chill@spotify.mock',
-			connectedAt: 'Connected 1 month ago'
-		}
-	];
+	let {
+		onSelect,
+		selected = $bindable(NaN),
+		isSettings = false,
+		spotifyAccounts,
+		roomid = null
+	} = $props();
 </script>
 
 <section class="rounded-xl border border-border bg-secondary p-4 sm:p-5 md:p-6">
@@ -45,30 +36,68 @@
 	</div>
 
 	<div class="space-y-2.5">
-		{#each spotifyAccounts as account (account.email)}
-			<div class="rounded-lg border border-border bg-primary p-3">
-				<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div class="flex items-center gap-3">
-						<!-- Profile Picture -->
-						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/80">
-							<UserRoundIcon class="h-4 w-4 text-muted-foreground" />
-						</div>
+		{#each spotifyAccounts as account (account.id)}
+			{#if isSettings}
+				{@render accountlistItem(account, false)}
+			{:else}
+				<form
+					method="post"
+					action="?/selectAccount"
+					use:enhance={({ formData, cancel }) => {
+						const id = formData.get('account-id') as string;
+						selected = parseInt(id); // optimistic UI update
+						if (!roomid) cancel();
 
-						<!-- Keine Ahnung ob Email hier geht, sonst connectedAt -->
-						<div>
-							<p class="text-sm font-semibold text-foreground">{account.name}</p>
-							<p class="text-xs text-muted-foreground">{account.email}</p>
-						</div>
-					</div>
-
-					<div class="flex items-center justify-between gap-2 sm:justify-start">
-						<p class="text-xs text-muted-foreground">{account.connectedAt}</p>
-						<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Unlink account">
-							<Link2OffIcon class="h-4 w-4" />
-						</Button>
-					</div>
-				</div>
-			</div>
+						return ({ result }) => {
+							if (result.type === 'success') onSelect();
+						};
+					}}
+				>
+					<input type="hidden" value={account.id} name="account-id" />
+					<input type="hidden" value={roomid} name="room-id" />
+					<button type="submit" class="w-full text-left">
+						{@render accountlistItem(account, account.id === selected)}
+					</button>
+				</form>
+			{/if}
 		{/each}
 	</div>
 </section>
+
+{#snippet accountlistItem(
+	account: {
+		account_name: string;
+		account_mail: string;
+		connectedAt: string;
+	},
+	isSelected: boolean
+)}
+	<div
+		class={`rounded-lg border p-3 transition-colors
+			${isSelected ? 'border-green-500 bg-green-500/10' : 'border-border bg-primary'}`}
+	>
+		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+			<div class="flex items-center gap-3">
+				<!-- Profile Picture -->
+				<div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/80">
+					<UserRoundIcon class="h-4 w-4 text-muted-foreground" />
+				</div>
+
+				<!-- Keine Ahnung ob account_mail hier geht, sonst connectedAt -->
+				<div>
+					<p class="text-sm font-semibold text-foreground">{account.account_name}</p>
+					<p class="text-xs text-muted-foreground">{account.account_mail}</p>
+				</div>
+			</div>
+
+			<div class="flex items-center justify-between gap-2 sm:justify-start">
+				<p class="text-xs text-muted-foreground">{account.connectedAt}</p>
+				{#if isSettings}
+					<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Unlink account">
+						<Link2OffIcon class="h-4 w-4" />
+					</Button>
+				{/if}
+			</div>
+		</div>
+	</div>
+{/snippet}

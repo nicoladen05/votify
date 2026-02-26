@@ -4,8 +4,19 @@
 	import { RadioIcon } from '@lucide/svelte';
 	import Button from '../ui/Button.svelte';
 	import { page } from '$app/state';
+	import Dialog from '../Dialog.svelte';
 
-	const { hasConnectedSpotify, user, action } = $props();
+	const { hasConnectedSpotify, data, action } = $props();
+
+	let isOpen = $state(false);
+
+	function openDialog() {
+		isOpen = true;
+	}
+
+	function closeDialog() {
+		isOpen = false;
+	}
 </script>
 
 <div
@@ -24,29 +35,30 @@
 			</div>
 		{:else}
 			<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
-				<img src={user?.image_url} alt="User avatar" class="h-12 w-12 rounded-full object-cover" />
+				<img
+					src={data.user?.image_url}
+					alt="User avatar"
+					class="h-12 w-12 rounded-full object-cover"
+				/>
 			</div>
 			<div>
-				<p class="font-bold text-foreground">{user?.name}</p>
+				<p class="font-bold text-foreground">{data.user?.name}</p>
 				<p class="text-sm text-muted-foreground">Authorized Spotify account</p>
 			</div>
 		{/if}
 	</div>
 
 	{#if !hasConnectedSpotify}
-		<Button
-			class="w-full text-nowrap md:w-auto"
-			variant="hero"
-			size="sm"
-			onclick={() => {
-				window.location.href = spotifyAuthUrl + '&state=' + page.url.pathname;
-			}}>Connect Spotify</Button
+		<Button class="w-full text-nowrap md:w-auto" variant="hero" size="sm" onclick={openDialog}
+			>Connect Spotify</Button
 		>
 	{:else}
 		<form method="post" {action} class="flex justify-end" use:enhance>
+			<input type="hidden" value={data.room.roomid} name="room-id" />
 			<Button type="submit" variant="destructive" class="text-nowrap" size="sm"
 				>Disconnect Spotify</Button
 			>
 		</form>
 	{/if}
 </div>
+<Dialog bind:isOpen onClose={closeDialog}>asd</Dialog>

@@ -1,6 +1,7 @@
 import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/auth.schema';
+import { spotifyTokens } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -8,7 +9,13 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals }) => {
 	const accountData = db.select().from(user).where(eq(user.id, locals.user!.id));
 
+	const spotifyAccounts = await db
+		.select()
+		.from(spotifyTokens)
+		.where(eq(spotifyTokens.userId, locals.user!.id));
+
 	return {
+		spotifyAccounts,
 		accountData: accountData.then((account) => ({
 			email: account[0].email,
 			name: account[0].name

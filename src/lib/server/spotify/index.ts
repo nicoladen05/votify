@@ -46,13 +46,24 @@ export async function setAccessToken(
 ) {
 	const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
+	const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {
+		headers: { Authorization: `Bearer ${accessToken}` }
+	});
+
+	if (!userProfileRequest.ok) return null;
+
+	const userProfile = await userProfileRequest.json();
+	console.log(userProfile);
 	const spotifyToken = await db
 		.insert(spotifyTokens)
 		.values({
 			access_token: accessToken,
 			refresh_token: refreshToken,
 			expires_at: expiresAt,
-			userId
+			userId,
+			account_name: userProfile.display_name,
+			account_mail: userProfile.email,
+			account_img: userProfile.images[0].url
 		})
 		.returning({ id: spotifyTokens.id });
 

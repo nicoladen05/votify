@@ -68,7 +68,7 @@
 
 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 	{#each rooms as room (room)}
-		<RoomCard {room} action="?/deleteRoom" />
+		<RoomCard {room} spotifyAccounts={data.spotifyTokens} action="?/deleteRoom" />
 	{/each}
 
 	{#if rooms.length >= maxRooms}
@@ -88,6 +88,7 @@
 </div>
 <CreateRoomDialog
 	bind:isOpen={isCreateRoomDialogOpen}
+	spotifyAccounts={data.spotifyTokens}
 	onClose={closeCreateRoomDialog}
 	createAction="?/createRoom"
 />
