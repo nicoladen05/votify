@@ -1,10 +1,10 @@
 import { building } from '$app/environment';
-import type { Pathname } from '$app/types';
+import type { RouteId } from '$app/types';
 import { auth } from '$lib/server/auth';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
-const PUBLIC_ROUTES: Pathname[] = [
+const PUBLIC_ROUTES: RouteId[] = [
 	'/',
 	'/auth/login',
 	'/auth/signup',

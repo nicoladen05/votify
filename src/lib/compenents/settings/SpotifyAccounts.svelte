@@ -2,7 +2,6 @@
 	import { Link2OffIcon, PlusIcon, UserRoundIcon } from '@lucide/svelte';
 	import Button from '../ui/Button.svelte';
 	import { spotifyAuthUrl } from '$lib';
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 
 	const spotifyAccounts = [
