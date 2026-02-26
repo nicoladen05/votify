@@ -19,7 +19,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions: Actions = {
   updateAccount: async ({ request, locals }) => {
     const formData = await request.formData();
-    console.log(formData);
     const userName = formData.get("username") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;

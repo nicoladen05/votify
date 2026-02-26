@@ -47,14 +47,11 @@ async function getAccountData(
 		.where(eq(spotifyTokens.id, accountid));
 
 	if (spotifyCredentials.length === 1) {
-		console.log(spotifyCredentials);
-		console.log(await getAccessTokenByTokenId(spotifyCredentials[0].id));
 		const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {
 			headers: {
 				Authorization: `Bearer ${await getAccessTokenByTokenId(spotifyCredentials[0].id)}`
 			}
 		});
-		console.log(userProfileRequest);
 		if (!userProfileRequest.ok) return null;
 
 		const userProfile = await userProfileRequest.json();

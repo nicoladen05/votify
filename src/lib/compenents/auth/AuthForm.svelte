@@ -89,6 +89,7 @@
 				type="button"
 				onclick={() => (showPassword = !showPassword)}
 				class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+				aria-label="Toggle password visibility"
 			>
 				{#if showPassword}
 					<EyeOffIcon class="h-4 w-4" />
