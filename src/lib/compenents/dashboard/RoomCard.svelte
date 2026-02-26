@@ -4,8 +4,8 @@
 	import { resolve } from '$app/paths';
 	import Button from '../ui/Button.svelte';
 	import { goto } from '$app/navigation';
-	import ConnectionDropDown from '../room/ConnectionDropDown.svelte';
 	import Dialog from '../Dialog.svelte';
+	import SpotifyAccounts from '../settings/SpotifyAccounts.svelte';
 
 	const { room, action } = $props();
 
@@ -66,6 +66,7 @@
 			</form>
 		{:else if (room.state = 'missing_credentials')}
 			<Button
+				class="text-nowrap"
 				variant="missing-credentials"
 				size="sm"
 				type="submit"
@@ -75,7 +76,6 @@
 				}}
 			>
 				Connect Spotify
-				<!-- <ConnectionDropDown bind:isOpen onClose={handleMenuClose} /> -->
 			</Button>
 		{/if}
 
@@ -106,4 +106,6 @@
 	</div>
 </div>
 
-<Dialog bind:isOpen onClose={handleMenuClose} title="title" subtitle="subtitle">asd</Dialog>
+<Dialog bind:isOpen onClose={handleMenuClose}>
+	<SpotifyAccounts />
+</Dialog>

@@ -87,7 +87,7 @@
 	{/if}
 </div>
 <CreateRoomDialog
-	open={isCreateRoomDialogOpen}
+	bind:isOpen={isCreateRoomDialogOpen}
 	onClose={closeCreateRoomDialog}
 	createAction="?/createRoom"
 />
