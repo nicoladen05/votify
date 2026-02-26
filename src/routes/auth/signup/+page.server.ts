@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-	signup: async ({ request }) => {
+	signUp: async ({ request }) => {
 		const data = await request.formData();
 		const username = data.get('username')?.toString();
 		const email = data.get('email')?.toString();
@@ -21,6 +21,8 @@ export const actions: Actions = {
 			body: { name: username, email, password },
 			asResponse: true
 		});
+
+		await auth.api.sendVerificationEmail({ body: { email, callbackURL: '/dashboard' } });
 
 		if (authResponse.ok) {
 			return redirect(303, '/auth/signup/complete');

@@ -6,6 +6,7 @@ import { db } from '$lib/server/db';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
+import { spotifyTokens } from './db/schema';
 import { resend } from './email';
 
 export const auth = betterAuth({
@@ -20,7 +21,7 @@ export const auth = betterAuth({
 	emailAndPassword: { enabled: true, requireEmailVerification: true },
 	user: { changeEmail: { enabled: true } },
 	emailVerification: {
-		sendOnSignUp: true,
+		sendOnSignUp: false, // To avoid sending email on spotify sign up, send it manually for email signup
 		autoSignInAfterVerification: true,
 		sendVerificationEmail: async ({ user, url }) => {
 			resend.emails.send({
@@ -36,6 +37,31 @@ export const auth = betterAuth({
 		spotify: {
 			clientId: PUBLIC_SPOTIFY_CLIENT_ID,
 			clientSecret: SPOTIFY_CLIENT_SECRET
+		}
+	},
+
+	// Store the users spotify token in the db, if they sign up via spotify
+	databaseHooks: {
+		account: {
+			create: {
+				after: async (account) => {
+					if (
+						account.providerId !== 'spotify' ||
+						!account.accessToken ||
+						!account.refreshToken ||
+						!account.accessTokenExpiresAt ||
+						!account.userId
+					)
+						return;
+
+					await db.insert(spotifyTokens).values({
+						access_token: account.accessToken,
+						refresh_token: account.refreshToken,
+						expires_at: account.accessTokenExpiresAt,
+						userId: account.userId
+					});
+				}
+			}
 		}
 	}
 });
