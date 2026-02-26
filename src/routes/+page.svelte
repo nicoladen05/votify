@@ -15,6 +15,9 @@
 	import Button from '$lib/compenents/ui/Button.svelte';
 
 	import { resolve } from '$app/paths';
+	import type { PageProps } from './$types';
+
+	const { data }: PageProps = $props();
 
 	const steps = [
 		{
@@ -112,13 +115,14 @@
 		}
 	];
 
+	let howItWorks: HTMLElement | null = null;
 	const scrollToHowItWorks = () => {
-		document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+		howItWorks?.scrollIntoView({ behavior: 'smooth' });
 	};
 </script>
 
 <div class="min-h-screen bg-primary">
-	<LandingHeader />
+	<LandingHeader isLoggedIn={data.isLoggedIn} />
 
 	<section class="relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
 		<div
@@ -143,7 +147,7 @@
 					for guests - just great music, chosen together.
 				</p>
 				<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-					<a href={resolve('/auth/signup')}>
+					<a href={resolve(data.isLoggedIn ? '/dashboard' : '/auth/signup')}>
 						<Button variant="hero" size="lg" class="px-8 py-6 text-base">
 							Create Your Room
 							<ArrowRightIcon class="ml-2 h-5 w-5" />
@@ -269,7 +273,7 @@
 				<p class="mb-8 text-muted-foreground">
 					Join thousands of hosts who let their guests decide the vibe.
 				</p>
-				<a href={resolve('/auth/signup')}>
+				<a href={resolve(data.isLoggedIn ? '/dashboard' : '/auth/signup')}>
 					<Button variant="hero" size="lg" class="px-10 py-6 text-base">
 						Create Your Room - It's Free
 						<ArrowRightIcon class="ml-2 h-5 w-5" />
