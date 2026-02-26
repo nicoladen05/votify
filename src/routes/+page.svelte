@@ -237,7 +237,7 @@
 					>
 						{#if plan.highlight}
 							<div
-								class="bg-gradient-green absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold text-foreground"
+								class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-xs font-bold text-primary"
 							>
 								Most Popular
 							</div>
