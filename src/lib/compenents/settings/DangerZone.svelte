@@ -51,11 +51,12 @@
 		<form
 			method="post"
 			action="?/resetPassword"
+			class="w-full md:w-auto"
 			use:enhance={() => {
 				resetDialogOpen = false;
 			}}
 		>
-			<Button variant="destructive" type="submit">Reset</Button>
+			<Button class="w-full md:w-auto" variant="destructive" type="submit">Reset</Button>
 		</form>
 	</div>
 </Dialog>
@@ -89,6 +90,7 @@
 		<form
 			method="post"
 			action="?/deleteAccount"
+			class="w-full md:w-auto"
 			use:enhance={() => {
 				deletionDialogOpen = false;
 			}}
@@ -96,6 +98,7 @@
 			<Button
 				variant="destructive"
 				type="submit"
+				class="w-full md:w-auto"
 				disabled={deleteAccountConfirmationText !== 'Delete my account'}>Delete</Button
 			>
 		</form>
