@@ -143,7 +143,7 @@
 					for guests - just great music, chosen together.
 				</p>
 				<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-					<a href={resolve('/auth')}>
+					<a href={resolve('/auth/signup')}>
 						<Button variant="hero" size="lg" class="px-8 py-6 text-base">
 							Create Your Room
 							<ArrowRightIcon class="ml-2 h-5 w-5" />
@@ -251,7 +251,7 @@
 								</li>
 							{/each}
 						</ul>
-						<a href={resolve('/auth')}>
+						<a href={resolve('/auth/signup')}>
 							<Button variant={plan.highlight ? 'hero' : 'hero-outline'} class="w-full"
 								>{plan.cta}</Button
 							>
@@ -269,7 +269,7 @@
 				<p class="mb-8 text-muted-foreground">
 					Join thousands of hosts who let their guests decide the vibe.
 				</p>
-				<a href={resolve('/auth')}>
+				<a href={resolve('/auth/signup')}>
 					<Button variant="hero" size="lg" class="px-10 py-6 text-base">
 						Create Your Room - It's Free
 						<ArrowRightIcon class="ml-2 h-5 w-5" />
