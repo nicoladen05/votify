@@ -21,7 +21,6 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      console.log("sending verification email to: ", user.email)
       resend.emails.send({
         from: "Votify <votify@skilldex.nicoladen.dev>",
         to: [user.email],
