@@ -33,7 +33,7 @@
 		{
 			icon: QrCodeIcon,
 			title: 'Share & Play',
-			desc: 'Share a link or QR code. Guests vote, you play the winners.'
+			desc: 'Share a link or QR code. Guests vote, you automatically play the winners.'
 		}
 	];
 
@@ -164,7 +164,7 @@
 		</div>
 	</section>
 
-	<section id="how-it-works" class="border-t border-border/30 py-24">
+	<section bind:this={howItWorks} class="border-t border-border/30 py-24">
 		<div class="container mx-auto px-4">
 			<h2 class="mb-4 text-center text-3xl font-bold text-foreground md:text-4xl">How It Works</h2>
 			<p class="mx-auto mb-16 max-w-lg text-center text-muted-foreground">
@@ -179,7 +179,7 @@
 						<div
 							class="group-hover:glow-green-sm mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10 text-accent transition-all duration-200 group-hover:bg-accent/20"
 						>
-							<svelte:component this={step.icon} class="h-7 w-7" />
+							<step.icon class="h-7 w-7" />
 						</div>
 						<div class="mb-2 text-sm font-bold text-accent">Step {i + 1}</div>
 						<h3 class="mb-2 text-xl font-bold text-foreground">{step.title}</h3>
@@ -207,7 +207,7 @@
 						<div
 							class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent"
 						>
-							<svelte:component this={feature.icon} class="h-5 w-5" />
+							<feature.icon class="h-5 w-5" />
 						</div>
 						<h3 class="mb-2 text-lg font-bold text-foreground">{feature.title}</h3>
 						<p class="text-sm text-muted-foreground">{feature.desc}</p>
