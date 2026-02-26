@@ -23,7 +23,7 @@ export const actions: Actions = {
 		});
 
 		if (authResponse.ok) {
-			return redirect(303, '/auth/login');
+			return redirect(303, '/auth/signup/complete');
 		}
 
 		const authError = await authResponse.json();
