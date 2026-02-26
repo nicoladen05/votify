@@ -18,8 +18,21 @@ export const auth = betterAuth({
 		level: env.NODE_ENV === 'development' ? 'debug' : 'info'
 	},
 
-	emailAndPassword: { enabled: true, requireEmailVerification: true },
+	emailAndPassword: {
+		enabled: true,
+		requireEmailVerification: true,
+		sendResetPassword: async ({ user, url }) => {
+			resend.emails.send({
+				from: 'Votify <votify@skilldex.nicoladen.dev>',
+				to: [user.email],
+				subject: 'Reset your password',
+				html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`
+			});
+		}
+	},
+
 	user: { changeEmail: { enabled: true } },
+
 	emailVerification: {
 		sendOnSignUp: false, // To avoid sending email on spotify sign up, send it manually for email signup
 		autoSignInAfterVerification: true,

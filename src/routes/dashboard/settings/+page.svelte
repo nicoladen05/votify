@@ -3,6 +3,7 @@
 	import type { PageProps } from './$types';
 	import AccountSettings from '$lib/compenents/settings/AccountSettings.svelte';
 	import SpotifyAccounts from '$lib/compenents/settings/SpotifyAccounts.svelte';
+	import DangerZone from '$lib/compenents/settings/DangerZone.svelte';
 
 	const { data }: PageProps = $props();
 
@@ -22,5 +23,7 @@
 		<AccountSettings currentAccountData={data.accountData} />
 
 		<SpotifyAccounts />
+
+		<DangerZone />
 	</div>
 </div>

@@ -2,7 +2,7 @@
 	import AuthForm from '$lib/compenents/auth/AuthForm.svelte';
 
 	type Props = {
-		form?: { error?: string };
+		form?: AuthFormData;
 	};
 
 	const { form }: Props = $props();

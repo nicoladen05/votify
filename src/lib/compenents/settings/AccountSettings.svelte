@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { KeyRoundIcon, MailIcon, SaveIcon, UserRoundIcon } from '@lucide/svelte';
+	import { MailIcon, SaveIcon, UserRoundIcon } from '@lucide/svelte';
 	import Input from '../ui/Input.svelte';
 	import Button from '../ui/Button.svelte';
 	import { enhance } from '$app/forms';
+	import Dialog from '../Dialog.svelte';
 
-	type AccountData = { username: string; email: string; password: string };
+	type AccountData = { username: string; email: string };
 
 	const { currentAccountData }: { currentAccountData: Promise<{ name: string; email: string }> } =
 		$props();
@@ -13,32 +14,31 @@
 	currentAccountData.then((user) => {
 		initialAccountData = {
 			username: user.name,
-			email: user.email,
-			password: ''
+			email: user.email
 		};
 		accountData = {
 			username: user.name,
-			email: user.email,
-			password: ''
+			email: user.email
 		};
 		accountDataLoaded = true;
 	});
 
 	let initialAccountData: AccountData = $state({
 		username: 'Loading...',
-		email: 'Loading...',
-		password: ''
+		email: 'Loading...'
 	});
 
 	let accountData: AccountData = $state({
 		username: 'Loading...',
-		email: 'Loading...',
-		password: ''
+		email: 'Loading...'
 	});
 
 	let accountDataLoaded = $state(false);
 
-	const isChanged = $derived(JSON.stringify(initialAccountData) !== JSON.stringify(accountData));
+	const isUsernameChanged = $derived(initialAccountData.username !== accountData.username);
+	const isEmailChanged = $derived(initialAccountData.email !== accountData.email);
+
+	let emailChangedDialogOpen = $state(false);
 </script>
 
 <section class="rounded-xl border border-border bg-secondary p-4 sm:p-5 md:p-6">
@@ -50,6 +50,8 @@
 		action="?/updateAccount"
 		use:enhance={() => {
 			return async ({ update }) => {
+				if (isEmailChanged) emailChangedDialogOpen = true;
+
 				update({ reset: false });
 				initialAccountData = { ...accountData };
 			};
@@ -94,32 +96,13 @@
 			</div>
 		</div>
 
-		<div>
-			<label for="password" class="mb-1.5 block text-sm font-medium text-foreground"
-				>New password</label
-			>
-			<div class="relative">
-				<KeyRoundIcon
-					class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-				/>
-				<Input
-					id="password"
-					type="password"
-					name="password"
-					placeholder="Enter a new password"
-					bind:value={accountData.password}
-					class="bg-primary px-10 focus:ring-0"
-				/>
-			</div>
-		</div>
-
-		<div class="flex pt-2">
+		<div class="flex gap-4 pt-2">
 			<Button
 				variant="hero"
 				size="sm"
 				type="submit"
 				class="ml-auto w-full md:w-auto"
-				disabled={!isChanged}
+				disabled={!isUsernameChanged && !isEmailChanged}
 			>
 				<SaveIcon class="h-4 w-4" />
 				Save Account Changes
@@ -127,3 +110,23 @@
 		</div>
 	</form>
 </section>
+
+<Dialog
+	title="Email Changed"
+	subtitle="Please confirm your email change."
+	bind:isOpen={emailChangedDialogOpen}
+	onClose={() => (emailChangedDialogOpen = false)}
+>
+	<p class="mb-5">
+		Please confirm your new email using the link that has been sent to you. Until you confirm your
+		new email, the old email will continue to be used.
+	</p>
+
+	<Button
+		variant="hero"
+		class="ml-auto w-full md:w-auto"
+		onclick={() => (emailChangedDialogOpen = false)}
+	>
+		Confirm
+	</Button>
+</Dialog>
