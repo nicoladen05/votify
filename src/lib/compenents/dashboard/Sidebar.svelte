@@ -70,7 +70,7 @@
 		{/each}
 	</nav>
 
-	<form method="POST" action="/dashboard/signOut" class="w-full">
+	<form method="POST" action="/dashboard?/signOut" class="w-full">
 		<button
 			class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:cursor-pointer hover:bg-destructive/10 hover:text-destructive"
 		>
