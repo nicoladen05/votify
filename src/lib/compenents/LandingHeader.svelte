@@ -2,6 +2,8 @@
 	import { resolve } from '$app/paths';
 	import { MusicIcon } from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
+
+	const { isLoggedIn } = $props();
 </script>
 
 <nav class="glass fixed top-0 right-0 left-0 z-50 border-b border-border/50">
@@ -10,13 +12,19 @@
 			<MusicIcon class="h-6 w-6 text-accent" />
 			<span class="text-xl font-bold text-foreground">Votify</span>
 		</a>
-		<div class="flex items-center gap-3">
-			<a href={resolve("/auth/login")}>
-				<Button variant="ghost" size="sm">Log in</Button>
+		{#if isLoggedIn}
+			<a href={resolve('/dashboard')}>
+				<Button variant="hero" size="sm">Dashboard</Button>
 			</a>
-			<a href={resolve("/auth/signup")}>
-				<Button variant="hero" size="sm">Get Started</Button>
-			</a>
-		</div>
+		{:else}
+			<div class="flex items-center gap-3">
+				<a href={resolve('/auth/login')}>
+					<Button variant="ghost" size="sm">Log in</Button>
+				</a>
+				<a href={resolve('/auth/signup')}>
+					<Button variant="hero" size="sm">Get Started</Button>
+				</a>
+			</div>
+		{/if}
 	</div>
 </nav>
