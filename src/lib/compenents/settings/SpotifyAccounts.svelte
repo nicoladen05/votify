@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { Link2OffIcon, PlusIcon, UserRoundIcon } from '@lucide/svelte';
 	import Button from '../ui/Button.svelte';
+	import { spotifyAuthUrl } from '$lib';
+	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 
 	const spotifyAccounts = [
 		{
@@ -29,7 +32,14 @@
 				You can link multiple Spotify accounts to your profile.
 			</p>
 		</div>
-		<Button variant="hero" size="sm" class="w-full sm:w-auto">
+		<Button
+			variant="hero"
+			size="sm"
+			class="w-full sm:w-auto"
+			onclick={() => {
+				window.location.href = spotifyAuthUrl + '&state=' + page.url.pathname;
+			}}
+		>
 			<PlusIcon class="h-4 w-4" />
 			Add Account
 		</Button>
