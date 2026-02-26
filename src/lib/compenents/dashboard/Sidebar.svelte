@@ -69,13 +69,15 @@
 			</a>
 		{/each}
 	</nav>
-	<a
-		href={resolve('/')}
-		class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-	>
-		<LogOutIcon class="h-4 w-4" />
-		Logout
-	</a>
+
+	<form method="POST" action="/dashboard/signOut" class="w-full">
+		<button
+			class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:cursor-pointer hover:bg-destructive/10 hover:text-destructive"
+		>
+			<LogOutIcon class="h-4 w-4" />
+			Logout
+		</button>
+	</form>
 </aside>
 
 {@render children()}

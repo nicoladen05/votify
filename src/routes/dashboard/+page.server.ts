@@ -1,3 +1,4 @@
+import { auth } from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import { room, spotifyTokens, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
@@ -81,5 +82,11 @@ export const actions: Actions = {
 	logoutSpotify: async () => {
 		await db.delete(spotifyTokens);
 		return redirect(303, '/dashboard');
+	},
+
+	signOut: async ({ request }) => {
+		const result = await auth.api.signOut({ headers: request.headers });
+
+		if (result.success) return redirect(303, '/');
 	}
 };
