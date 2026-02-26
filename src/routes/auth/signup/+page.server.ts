@@ -3,7 +3,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-	default: async ({ request }) => {
+	signup: async ({ request }) => {
 		const data = await request.formData();
 		const username = data.get('username')?.toString();
 		const email = data.get('email')?.toString();
@@ -28,5 +28,25 @@ export const actions: Actions = {
 
 		const authError = await authResponse.json();
 		return fail(401, { error: authError.message });
+	},
+
+	continueSpotify: async ({ request }) => {
+		const authResponse = await auth.api.signInSocial({
+			headers: request.headers,
+			body: {
+				provider: 'spotify',
+				callbackURL: '/dashboard',
+				errorCallbackURL: '/auth/login',
+				scopes: [
+					'user-read-playback-state',
+					'user-modify-playback-state',
+					'user-read-currently-playing'
+				]
+			}
+		});
+
+		if (!authResponse.url) return fail(400, { error: 'No URL provided' });
+
+		return redirect(303, authResponse.url);
 	}
 };
