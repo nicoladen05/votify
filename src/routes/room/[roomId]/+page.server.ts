@@ -1,5 +1,6 @@
+import { launchRoom } from '$lib/server/actions';
 import { db } from '$lib/server/db';
-import { room as roomTable, spotifyTokens } from '$lib/server/db/schema';
+import { room, room as roomTable, spotifyTokens } from '$lib/server/db/schema';
 import { getAccessTokenByTokenId } from '$lib/server/spotify';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
@@ -11,30 +12,36 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!Number.isInteger(roomIdParam) || roomIdParam <= 0) error(404, 'This room does not exist');
 
 	const dbrooms = await db.select().from(roomTable).where(eq(roomTable.id, roomIdParam));
-	const room = dbrooms[0];
+	let singleRoom = dbrooms[0];
+	let user;
 
-	const spotifyAccount = room.spotifyTokens ? await getAccountData(room.spotifyTokens!) : null;
+	if (singleRoom.spotifyTokens) {
+		user = await getAccountData(singleRoom.spotifyTokens!);
+	} else {
+		singleRoom = (
+			await db
+				.update(room)
+				.set({ state: 'missing_credentials' })
+				.where(eq(room.id, singleRoom.id))
+				.returning()
+		)[0];
+	}
 
-	const getStatus = () => {
-		if (!spotifyAccount) return 'missing_credentials';
-		return 'live';
-	};
-
-	if (!room) {
+	if (!singleRoom) {
 		return error(404, 'This room does not exist');
 	}
 
-	if (locals.user!.id !== room.userId) {
+	if (locals.user!.id !== singleRoom.userId) {
 		return error(403, 'You are not authorized to access this room');
 	}
 
 	return {
 		room: {
 			roomid: roomIdParam,
-			name: room.name,
-			status: getStatus()
+			name: singleRoom.name,
+			status: singleRoom!.state
 		},
-		spotifyAccount
+		user
 	};
 };
 
@@ -65,5 +72,7 @@ async function getAccountData(
 export const actions: Actions = {
 	logoutSpotify: async () => {
 		await db.delete(spotifyTokens);
-	}
+	},
+
+	launchRoom
 };

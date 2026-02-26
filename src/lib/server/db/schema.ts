@@ -1,12 +1,12 @@
 import {
-	pgTable,
-	text,
-	primaryKey,
-	timestamp,
 	boolean,
 	foreignKey,
+	integer,
+	pgTable,
+	primaryKey,
 	serial,
-	integer
+	text,
+	timestamp
 } from 'drizzle-orm/pg-core';
 import { user } from './auth.schema';
 
@@ -79,7 +79,8 @@ export const room = pgTable(
 		id: serial('id').primaryKey().notNull(),
 		spotifyTokens: integer('spotifyTokens'),
 		name: text('name').notNull(),
-		userId: text('userId').notNull()
+		userId: text('userId').notNull(),
+		state: text('state').notNull().default('offline')
 	},
 	(table) => [
 		foreignKey({

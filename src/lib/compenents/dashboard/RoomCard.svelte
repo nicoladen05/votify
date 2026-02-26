@@ -4,8 +4,19 @@
 	import { resolve } from '$app/paths';
 	import Button from '../ui/Button.svelte';
 	import { goto } from '$app/navigation';
+	import ConnectionDropDown from '../room/ConnectionDropDown.svelte';
+	import Dialog from '../Dialog.svelte';
 
 	const { room, action } = $props();
+
+	let isOpen = $state(false);
+	function handleButtonClick() {
+		isOpen = !isOpen;
+	}
+
+	function handleMenuClose() {
+		isOpen = false;
+	}
 </script>
 
 <div
@@ -22,7 +33,7 @@
 	</div>
 	<div class="flex items-center gap-2">
 		{#if room.state === 'offline'}
-			<form method="post" action="?/launchAction" use:enhance>
+			<form method="post" action="?/launchRoom" use:enhance>
 				<input value={room.id} name="room-id" type="hidden" />
 				<input value={room.spotifyTokens} name="spotify-id" type="hidden" />
 				<Button
@@ -37,8 +48,8 @@
 					Launch
 				</Button>
 			</form>
-		{:else}
-			<form method="post" action="?/stopAction" use:enhance>
+		{:else if room.state === 'live'}
+			<form method="post" action="?/stopRoom" use:enhance>
 				<input value={room.id} name="room-id" type="hidden" />
 				<input value={room.spotifyTokens} name="spotify-id" type="hidden" />
 				<Button
@@ -53,6 +64,19 @@
 					Stop
 				</Button>
 			</form>
+		{:else if (room.state = 'missing_credentials')}
+			<Button
+				variant="missing-credentials"
+				size="sm"
+				type="submit"
+				onclick={(e) => {
+					e.stopPropagation();
+					handleButtonClick();
+				}}
+			>
+				Connect Spotify
+				<!-- <ConnectionDropDown bind:isOpen onClose={handleMenuClose} /> -->
+			</Button>
 		{/if}
 
 		<Button
@@ -81,3 +105,5 @@
 		</form>
 	</div>
 </div>
+
+<Dialog bind:isOpen onClose={handleMenuClose} title="title" subtitle="subtitle">asd</Dialog>

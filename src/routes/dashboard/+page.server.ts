@@ -1,16 +1,18 @@
 import { auth } from '$lib/server/auth';
+import { launchRoom, stopRoom } from '$lib/server/actions';
 import { db } from '$lib/server/db';
 import { room, spotifyTokens, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
 import { error, redirect } from '@sveltejs/kit';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const roomsPromise = db
-		.select({ id: room.id, name: room.name })
+		.select({ id: room.id, name: room.name, state: room.state, spotifyTokens: room.spotifyTokens })
 		.from(room)
-		.where(eq(room.userId, locals.user!.id));
+		.where(eq(room.userId, locals.user!.id))
+		.orderBy(asc(room.state));
 
 	const spotifyTokensPromise = db
 		.select()
@@ -89,4 +91,7 @@ export const actions: Actions = {
 
 		if (result.success) return redirect(303, '/');
 	}
+	launchRoom,
+
+	stopRoom
 };

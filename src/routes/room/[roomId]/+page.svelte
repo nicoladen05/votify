@@ -9,6 +9,7 @@
 		CopyIcon,
 		ExternalLinkIcon,
 		KeyRound,
+		PlayIcon,
 		RadioIcon
 	} from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
@@ -18,12 +19,11 @@
 	const { data }: PageProps = $props();
 
 	const votePath = $derived(`/room/${page.params.roomId}/guest`);
-	const hasCredentials = $derived(data.room.status.toString() !== 'missing_credentials');
+	const hasCredentials = $derived(data.room.status !== 'missing_credentials');
 
 	let copied = $state(false);
 	let roomLink = $state('');
 	let RoomState = $derived(data.room.status);
-
 	onMount(() => {
 		roomLink = `${window.location.origin}${votePath}`;
 	});
@@ -60,7 +60,7 @@
 					class="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary/80 px-4 py-2 text-sm font-bold text-muted-foreground"
 				>
 					<span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-					Room is unable to play
+					Room is offline
 				</div>
 			{:else}
 				<div
@@ -106,13 +106,21 @@
 						</Button>
 					</div>
 				</div>
-
-				<a class="w-full" href={resolve(`/room/${page.params.roomId}/guest`)}>
-					<Button variant="hero" class="w-full">
-						<ExternalLinkIcon class="mr-2 h-4 w-4" />
-						Open Guest View
-					</Button>
-				</a>
+				{#if RoomState === 'offline'}
+					<form method="post" action="?/launchRoom" class="w-full">
+						<Button variant="hero" class="w-full">
+							<PlayIcon class="mr-2 h-4 w-4" />
+							Launch
+						</Button>
+					</form>
+				{:else}
+					<a class="w-full" href={resolve(`/room/${page.params.roomId}/guest`)}>
+						<Button variant="hero" class="w-full">
+							<ExternalLinkIcon class="mr-2 h-4 w-4" />
+							Open Guest View
+						</Button>
+					</a>
+				{/if}
 			</div>
 		</div>
 
@@ -145,7 +153,7 @@
 				<ConnectionBar
 					action="?/logoutSpotify"
 					hasConnectedSpotify={hasCredentials}
-					user={data.spotifyAccount}
+					user={data.user}
 				/>
 			</div>
 		</div>
