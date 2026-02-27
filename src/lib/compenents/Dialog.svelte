@@ -7,7 +7,9 @@
 		subtitle = null,
 		children,
 		isOpen = $bindable(false),
-		onClose = () => {}
+		onClose = () => {},
+		className,
+		...rest
 	} = $props();
 
 	function closeDialog() {
@@ -37,6 +39,7 @@
 				aria-modal="true"
 				aria-labelledby="create-room-title"
 				class="relative flex h-full w-full flex-col bg-secondary p-6 md:h-auto md:max-h-[90vh] md:w-full md:max-w-lg md:rounded-2xl md:border md:border-border md:p-7"
+				{...rest}
 			>
 				<div class="mb-6 flex items-start justify-between gap-4">
 					<div>
@@ -58,7 +61,8 @@
 			</div>
 		{:else}
 			<div
-				class="relative flex h-full w-full flex-col bg-secondary md:h-auto md:max-h-[90vh] md:w-full md:max-w-lg md:rounded-2xl md:border md:border-border"
+				class={`relative flex h-full w-full flex-col bg-secondary md:h-auto md:max-h-[90vh] md:w-full md:max-w-lg md:rounded-2xl md:border md:border-border ${className}`}
+				{...rest}
 			>
 				{@render children?.()}
 				<Button variant="hero" class="mx-6 mt-auto mb-6 max-w-lvw md:hidden" onclick={closeDialog}

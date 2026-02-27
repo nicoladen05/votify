@@ -14,14 +14,16 @@
 	} = $props();
 </script>
 
-<section class="rounded-xl border border-border bg-secondary p-4 sm:p-5 md:p-6">
+<section class="rounded-lg border border-border bg-secondary p-4 sm:p-5 md:p-6">
 	<div class="mb-5 flex flex-wrap justify-between gap-3 sm:gap-4">
-		<div>
-			<h2 class="text-lg font-bold text-foreground">Spotify Accounts</h2>
-			<p class="mt-1 text-sm text-muted-foreground">
-				You can link multiple Spotify accounts to your profile.
-			</p>
-		</div>
+		{#if isSettings}
+			<div>
+				<h2 class="text-lg font-bold text-foreground">Spotify Accounts</h2>
+				<p class="mt-1 text-sm text-muted-foreground">
+					You can link multiple Spotify accounts to your profile.
+				</p>
+			</div>
+		{/if}
 		{#if page.url.pathname.includes('settings')}
 			<Button
 				onclick={() => {

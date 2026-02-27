@@ -24,19 +24,27 @@
 	onClose={closeDialog}
 >
 	<form
-		class="flex flex-1 flex-col"
+		class="flex flex-1 flex-col gap-4"
 		method="post"
 		action={createAction}
 		use:enhance={() => {
 			closeDialog();
 		}}
 	>
-		<label for="room-name" class="mb-2 text-sm font-medium text-foreground">Room name</label>
-		<Input id="room-name" name="room-name" placeholder="Late Night Jams" bind:value={roomName} />
-		<input type="hidden" name="selected-account" value={selected} />
+		<div>
+			<label for="room-name" class="mb-2 ml-0.5 text-sm font-medium text-foreground"
+				>Room name</label
+			>
+			<Input id="room-name" name="room-name" placeholder="Late Night Jams" bind:value={roomName} />
+			<input type="hidden" name="selected-account" value={selected} />
+		</div>
 
-		<SpotifyAccounts bind:selected {spotifyAccounts} />
-		<div class="mt-auto flex flex-col-reverse gap-2 pt-6 sm:flex-row sm:justify-end">
+		<div>
+			<span class="mb-2 ml-0.5 text-sm font-medium text-foreground">Spotify Account</span>
+			<SpotifyAccounts bind:selected {spotifyAccounts} />
+		</div>
+
+		<div class="mt-auto flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
 			<Button variant="hero-outline" onclick={closeDialog}>Cancel</Button>
 			<Button type="submit" variant="hero" disabled={!roomName.trim()}>Create room</Button>
 		</div>

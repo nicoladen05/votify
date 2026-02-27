@@ -235,6 +235,6 @@
 	</div>
 </div>
 
-<Dialog bind:isOpen onClose={closeDialog}>
+<Dialog bind:isOpen onClose={closeDialog} className="border-none">
 	<SpotifyAccounts spotifyAccounts={data.spotifyAccounts} />
 </Dialog>
