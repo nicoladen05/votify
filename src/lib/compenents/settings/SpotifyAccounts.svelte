@@ -14,17 +14,17 @@
 	} = $props();
 </script>
 
-<section class="rounded-lg border border-border bg-secondary p-4 sm:p-5 md:p-6">
-	<div class="mb-5 flex flex-wrap justify-between gap-3 sm:gap-4">
-		{#if isSettings}
+<section
+	class={`rounded-lg border border-border bg-secondary ${isSettings ? 'p-4 sm:p-5 md:p-6' : 'p-2'}`}
+>
+	{#if isSettings}
+		<div class="mb-5 flex flex-wrap justify-between gap-3 sm:gap-4">
 			<div>
 				<h2 class="text-lg font-bold text-foreground">Spotify Accounts</h2>
 				<p class="mt-1 text-sm text-muted-foreground">
 					You can link multiple Spotify accounts to your profile.
 				</p>
 			</div>
-		{/if}
-		{#if page.url.pathname.includes('settings')}
 			<Button
 				onclick={() => {
 					window.location.href = spotifyAuthUrl + '&state=' + page.url.pathname;
@@ -36,8 +36,8 @@
 				<PlusIcon class="h-4 w-4" />
 				Add Account
 			</Button>
-		{/if}
-	</div>
+		</div>
+	{/if}
 
 	<div class="space-y-2.5">
 		{#each spotifyAccounts as account (account.id)}
