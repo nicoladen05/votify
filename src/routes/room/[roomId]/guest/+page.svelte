@@ -8,8 +8,8 @@
 	const { data } = $props();
 
 	const isLoggedIn = $derived(data.isLoggedIn);
-	const roomName = $derived(data.roomName);
-	const roomId = $derived(data.roomId);
+	const roomName = $derived(data.room.name);
+	const roomId = $derived(data.room.id);
 </script>
 
 <main class="relative min-h-screen overflow-x-clip bg-primary px-4 pt-6 pb-10 sm:pt-8">
@@ -32,16 +32,21 @@
 					<span class="text-sm font-bold tracking-wide text-foreground">Votify</span>
 				</div>
 				<span
-					class="inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/10 px-2 py-1 text-[11px] font-semibold text-accent"
+					class={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[11px] font-semibold
+				          ${data.room.state === 'live' ? 'border-accent/25 bg-accent/10 text-accent ' : 'border-muted-foreground/25 bg-muted-foreground/10 text-muted-foreground'}`}
 				>
-					<span class="h-1.5 w-1.5 animate-pulse rounded-full bg-accent"></span>
-					Live
+					<span
+						class={`h-1.5 w-1.5 rounded-full ${data.room.state === 'live' ? 'animate-pulse bg-accent' : 'bg-muted-foreground'} `}
+					></span>
+					{data.room.state === 'live' ? 'Live' : 'Offline'}
 				</span>
 			</div>
 			<h1 class="truncate text-xl font-bold text-foreground">{roomName}</h1>
 		</header>
 
-		<div class="flex flex-col gap-4 rounded-2xl border border-border/70 bg-secondary/25 p-3 sm:p-4">
+		<div
+			class={`flex flex-col gap-4 rounded-2xl border border-border/70 bg-secondary/25 p-3 sm:p-4 ${data.room.state !== 'live' ? 'pointer-events-none blur-sm' : ''} `}
+		>
 			<div class="animate-scale-in z-10" style="animation-delay: 40ms;">
 				<SearchBar {roomId} />
 			</div>

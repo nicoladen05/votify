@@ -1,9 +1,9 @@
 import { db } from '$lib/server/db/index.js';
-import { guest, room } from '$lib/server/db/schema.js';
-import { randomUUID } from 'node:crypto';
-import { eq } from 'drizzle-orm';
-import type { PageServerLoad } from './$types';
+import { guest, room as roomTable } from '$lib/server/db/schema.js';
 import { error } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ cookies, locals, params }) => {
 	let guest_id = cookies.get('guest_id');
@@ -12,14 +12,14 @@ export const load: PageServerLoad = async ({ cookies, locals, params }) => {
 		throw error(404, 'This room does not exist');
 	}
 
-	const roomData = await db
-		.select({ name: room.name })
-		.from(room)
-		.where(eq(room.id, roomId))
+	const room = await db
+		.select({ name: roomTable.name, state: roomTable.state })
+		.from(roomTable)
+		.where(eq(roomTable.id, roomId))
 		.limit(1)
 		.then((rows) => rows[0]);
 
-	if (!roomData) {
+	if (!room) {
 		throw error(404, 'This room does not exist');
 	}
 
@@ -37,7 +37,9 @@ export const load: PageServerLoad = async ({ cookies, locals, params }) => {
 
 	return {
 		isLoggedIn: locals.session ? true : false,
-		roomId,
-		roomName: roomData.name
+		room: {
+			id: roomId,
+			...room
+		}
 	};
 };

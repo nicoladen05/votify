@@ -1,8 +1,8 @@
 import { db } from '$lib/server/db';
-import { songQueueItem, votes } from '$lib/server/db/schema';
-import { json } from '@sveltejs/kit';
-import { and, sql, desc, eq } from 'drizzle-orm';
+import { room, songQueueItem, votes } from '$lib/server/db/schema';
 import { getRoomClosed } from '$lib/server/spotify/queueWatcher';
+import { json } from '@sveltejs/kit';
+import { and, desc, eq, sql } from 'drizzle-orm';
 
 function getRoomId(url: URL): number | null {
 	const roomId = Number.parseInt(
@@ -23,6 +23,12 @@ export async function POST({ url }: { url: URL }) {
 
 	if (!roomId || !uri || !id || !img || !title || !artist)
 		return json({ success: false, message: 'Missing Parameters' });
+
+	const roomState = (
+		await db.select({ state: room.state }).from(room).where(eq(room.id, roomId))
+	)[0].state;
+
+	if (roomState !== 'live') return json({ success: false, message: 'Room is offline' });
 
 	await db.insert(songQueueItem).values({
 		room_id: roomId,
