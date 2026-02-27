@@ -5,8 +5,10 @@
 	import {
 		ArrowLeftIcon,
 		CheckIcon,
+		CircleStop,
 		CopyIcon,
 		ExternalLinkIcon,
+		Info,
 		KeyRound,
 		PlayIcon,
 		RadioIcon
@@ -20,6 +22,7 @@
 	const { data }: PageProps = $props();
 
 	const votePath = $derived(`/room/${data.room.roomid}/guest`);
+	const room = $derived(data.room);
 	const hasCredentials = $derived(data.room.status !== 'missing_credentials');
 
 	let copied = $state(false);
@@ -117,20 +120,40 @@
 					</div>
 				</div>
 				{#if RoomState === 'offline'}
-					<form method="post" action="?/launchRoom" class="w-full">
-						<Button variant="hero" class="w-full">
-							<PlayIcon class="mr-2 h-4 w-4" />
+					<form class="w-full" method="post" action="?/launchRoom" use:enhance>
+						<input value={room.roomid} name="room-id" type="hidden" />
+						<input value={room.spotifyTokens} name="spotify-id" type="hidden" />
+						<Button variant="hero" type="submit" class="w-full">
+							<PlayIcon class="mr-1 h-3 w-3" />
 							Launch
 						</Button>
 					</form>
-				{:else}
-					<a class="w-full" href={resolve(`/room/${data.room.roomid}/guest`)}>
-						<Button variant="hero" class="w-full">
-							<ExternalLinkIcon class="mr-2 h-4 w-4" />
-							Open Guest View
+				{:else if RoomState === 'live'}
+					<form class="w-full" method="post" action="?/stopRoom" use:enhance>
+						<input value={room.roomid} name="room-id" type="hidden" />
+						<Button variant="destructive" type="submit" class="w-full">
+							<CircleStop class="mr-1 h-3 w-3" />
+							Stop
 						</Button>
-					</a>
+					</form>
+				{:else if RoomState === 'missing_credentials'}
+					<div class="w-full">
+						<Button disabled variant="hero" type="submit" class="w-full">
+							<PlayIcon class="mr-1 h-3 w-3" />
+							Launch
+						</Button>
+						<p class="flex items-center gap-1 pt-1 pl-1 text-muted-foreground">
+							<Info class="h-4 w-4" />
+							Please connect your Spotify account down below
+						</p>
+					</div>
 				{/if}
+				<a class="w-full" href={resolve(`/room/${data.room.roomid}/guest`)}>
+					<Button variant="hero" class="w-full">
+						<ExternalLinkIcon class="mr-2 h-4 w-4" />
+						Open Guest View
+					</Button>
+				</a>
 			</div>
 		</div>
 

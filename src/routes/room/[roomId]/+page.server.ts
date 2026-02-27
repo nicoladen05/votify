@@ -1,4 +1,4 @@
-import { launchRoom } from '$lib/server/actions';
+import { launchRoom, stopRoom } from '$lib/server/actions';
 import { db } from '$lib/server/db';
 import { room, room as roomTable, spotifyTokens } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
@@ -44,7 +44,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		room: {
 			roomid: roomIdParam,
 			name: singleRoom.name,
-			status: singleRoom!.state
+			status: singleRoom!.state,
+			spotifyTokens: singleRoom.spotifyTokens
 		},
 		user,
 		spotifyAccounts
@@ -58,5 +59,7 @@ export const actions: Actions = {
 		await db.update(room).set({ spotifyTokens: null }).where(eq(room.id, id));
 	},
 
-	launchRoom
+	launchRoom,
+
+	stopRoom
 };
