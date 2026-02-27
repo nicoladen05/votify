@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { spotifyAuthUrl } from '$lib';
 	import { RadioIcon } from '@lucide/svelte';
 	import Button from '../ui/Button.svelte';
-	import { page } from '$app/state';
 	import Dialog from '../Dialog.svelte';
 
 	const { hasConnectedSpotify, data, action } = $props();
