@@ -142,8 +142,8 @@
 							<PlayIcon class="mr-1 h-3 w-3" />
 							Launch
 						</Button>
-						<p class="flex items-center gap-1 pt-1 pl-1 text-muted-foreground">
-							<Info class="h-4 w-4" />
+						<p class="flex items-start gap-1 pt-1 pl-1 text-muted-foreground">
+							<Info class="mt-1 h-4 w-4" />
 							Please connect your Spotify account down below
 						</p>
 					</div>
