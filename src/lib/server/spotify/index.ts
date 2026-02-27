@@ -40,11 +40,12 @@ async function getAccessTokenFromRefreshToken(
  */
 export async function setAccessToken(
 	accessToken: string,
-	expiresIn: number,
+	expires: Date | number,
 	refreshToken: string,
 	userId: string
 ) {
-	const expiresAt = new Date(Date.now() + expiresIn * 1000);
+	const expiresAt: Date =
+		typeof expires === 'number' ? new Date(Date.now() + expires * 1000) : expires;
 
 	const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {
 		headers: { Authorization: `Bearer ${accessToken}` }

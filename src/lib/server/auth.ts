@@ -6,8 +6,8 @@ import { db } from '$lib/server/db';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
-import { spotifyTokens } from './db/schema';
 import { resend } from './email';
+import { setAccessToken } from './spotify';
 
 export const auth = betterAuth({
 	baseURL: env.ORIGIN,
@@ -80,12 +80,12 @@ export const auth = betterAuth({
 					)
 						return;
 
-					await db.insert(spotifyTokens).values({
-						access_token: account.accessToken,
-						refresh_token: account.refreshToken,
-						expires_at: account.accessTokenExpiresAt,
-						userId: account.userId
-					});
+					await setAccessToken(
+						account.accessToken,
+						account.accessTokenExpiresAt,
+						account.refreshToken,
+						account.userId
+					);
 				}
 			}
 		}
