@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { qr } from '@svelte-put/qr/svg';
 	import {
 		ArrowLeftIcon,
@@ -17,7 +17,7 @@
 	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
 	const { data }: PageProps = $props();
 
-	const votePath = $derived(`/room/${$page.params.roomId}/guest`);
+	const votePath = $derived(`/room/${page.params.roomId}/guest`);
 	const hasCredentials = $derived(data.room.status.toString() !== 'missing_credentials');
 
 	let copied = $state(false);
@@ -107,7 +107,7 @@
 					</div>
 				</div>
 
-				<a class="w-full" href={resolve(`/room/${$page.params.roomId}/guest`)}>
+				<a class="w-full" href={resolve(`/room/${page.params.roomId}/guest`)}>
 					<Button variant="hero" class="w-full">
 						<ExternalLinkIcon class="mr-2 h-4 w-4" />
 						Open Guest View
