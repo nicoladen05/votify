@@ -6,12 +6,18 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 const PUBLIC_ROUTES: RouteId[] = [
 	'/',
+	'/room/[roomId]/guest',
+
 	'/auth/login',
 	'/auth/signup',
 	'/auth/signup/complete',
 	'/auth/forgot-password',
 	'/auth/reset-password',
-	'/room/[roomId]/guest'
+
+	'/api/now-playing-sse',
+	'/api/queue/vote',
+	'/api/queue',
+	'/api/search'
 ];
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
