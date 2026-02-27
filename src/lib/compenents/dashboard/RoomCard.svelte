@@ -30,6 +30,19 @@
 >
 	<div class="mb-4 flex items-center justify-between">
 		<h3 class="font-bold text-foreground">{room.name}</h3>
+
+		<span
+			class={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+				room.status === 'live' ? 'bg-accent/20 text-accent' : 'bg-secondary text-muted-foreground'
+			}`}
+		>
+			<span
+				class={`h-1.5 w-1.5 rounded-full ${
+					room.status === 'live' ? 'animate-pulse bg-accent' : 'bg-muted-foreground'
+				}`}
+			></span>
+			{room.status === 'live' ? 'Live' : 'Offline'}
+		</span>
 	</div>
 	<div class="flex items-center gap-2">
 		{#if room.state === 'offline'}
