@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { MusicIcon, PlusIcon } from '@lucide/svelte';
+	import { ArrowLeftIcon, MusicIcon, PlusIcon } from '@lucide/svelte';
 	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
 	import Queue from '$lib/compenents/Queue.svelte';
 	import SearchBar from '$lib/compenents/SearchBar.svelte';
@@ -13,16 +13,16 @@
 </script>
 
 <main class="relative min-h-screen overflow-x-clip bg-primary px-4 pt-6 pb-10 sm:pt-8">
-	{#if isLoggedIn}
-		<a class="absolute top-5 right-5 hidden justify-end md:flex" href={resolve('/admin')}>
-			<button
-				class="inline-flex items-center rounded-lg border border-border bg-secondary px-4 py-2 text-sm font-medium text-foreground transition-colors hover:cursor-pointer hover:bg-secondary/70"
-				>Admin</button
-			>
-		</a>
-	{/if}
-
 	<div class="mx-auto flex w-full max-w-2xl flex-col">
+		{#if isLoggedIn}
+			<a
+				href={resolve(`/room/${roomId}`)}
+				class="top-5 left-5 mb-8 flex items-center justify-start gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground lg:flex"
+			>
+				<ArrowLeftIcon class="h-4 w-4" />
+				Back to Overview
+			</a>
+		{/if}
 		<header
 			class="sticky top-4 z-20 mb-5 rounded-2xl border border-border/80 bg-secondary/80 p-4 backdrop-blur-lg"
 		>

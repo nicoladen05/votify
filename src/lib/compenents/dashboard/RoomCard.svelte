@@ -1,6 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { PlayIcon, Settings2Icon, Trash2Icon, CircleStop } from '@lucide/svelte';
+	import { PlayIcon, Trash2Icon, CircleStop } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import Button from '../ui/Button.svelte';
 	import { goto } from '$app/navigation';
@@ -29,7 +29,7 @@
 	}}
 >
 	<div class="mb-4 flex items-center justify-between">
-		<h3 class="font-bold text-foreground">{room.name}</h3>
+		<h3 class="truncate font-bold text-foreground">{room.name}</h3>
 
 		<span
 			class={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -92,17 +92,7 @@
 			</Button>
 		{/if}
 
-		<Button
-			variant="ghost"
-			size="icon"
-			class="h-8 w-8 text-muted-foreground hover:bg-transparent hover:text-foreground"
-			onclick={(e) => {
-				e.stopPropagation();
-			}}
-		>
-			<Settings2Icon class="h-4 w-4" />
-		</Button>
-		<form method="post" {action} use:enhance>
+		<form method="post" class="ml-auto" {action} use:enhance>
 			<input value={room.id} name="room-id" type="hidden" />
 			<Button
 				variant="ghost"
