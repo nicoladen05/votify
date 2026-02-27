@@ -1,9 +1,9 @@
+import { launchRoom, selectAccount, stopRoom } from '$lib/server/actions';
 import { auth } from '$lib/server/auth';
-import { launchRoom, stopRoom, selectAccount } from '$lib/server/actions';
 import { db } from '$lib/server/db';
 import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { and, asc, eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -91,16 +91,11 @@ export const actions: Actions = {
 		await db.delete(room).where(and(eq(room.id, roomId), eq(room.userId, locals.user!.id)));
 	},
 
-	logoutSpotify: async () => {
-		await db.delete(spotifyTokens);
-		return redirect(303, '/dashboard');
-	},
-
 	signOut: async ({ request }) => {
 		const result = await auth.api.signOut({ headers: request.headers });
 
 		if (result.success) return redirect(303, '/');
-	}
+	},
 	selectAccount,
 
 	launchRoom,

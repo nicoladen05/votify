@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/state';
 	import { qr } from '@svelte-put/qr/svg';
 	import {
 		ArrowLeftIcon,

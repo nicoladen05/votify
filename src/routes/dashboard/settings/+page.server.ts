@@ -49,6 +49,7 @@ export const actions: Actions = {
 
 	deleteAccount: async ({ request }) => {
 		await auth.api.deleteUser({ headers: request.headers, body: { callbackURL: '/' } });
+	},
 	unlinkSpotify: async ({ request }) => {
 		const formData = await request.formData();
 		const accountID = formData.get('account-id') as string;

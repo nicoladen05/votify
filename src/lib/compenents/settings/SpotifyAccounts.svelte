@@ -2,9 +2,7 @@
 	import { Link2OffIcon, PlusIcon } from '@lucide/svelte';
 	import Button from '../ui/Button.svelte';
 	import { spotifyAuthUrl } from '$lib';
-	import { page } from '$app/state';
 	import { enhance } from '$app/forms';
-	import { spotifyAuthUrl } from '$lib';
 	import { page } from '$app/state';
 
 	let {
