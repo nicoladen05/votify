@@ -1,9 +1,9 @@
 import { auth } from '$lib/server/auth';
 import { launchRoom, stopRoom, selectAccount } from '$lib/server/actions';
 import { db } from '$lib/server/db';
-import { room, spotifyTokens, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
+import { room, spotifyTokens as spotifyTokensTable } from '$lib/server/db/schema';
 import { stopAndRemoveRoomWorker } from '$lib/server/spotify/queueWatcher';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { and, asc, eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -27,11 +27,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 		userPromise
 	]);
 
+	rooms.forEach(async (singleRoom) => {
+		if (singleRoom.spotifyTokens === null) {
+			await db.update(room).set({ state: 'missing_credentials' }).where(eq(room.id, singleRoom.id));
+			singleRoom.state = 'missing_credentials';
+		}
+	});
+
 	return { rooms, spotifyTokens, user };
 };
 
 async function getAccountData(): Promise<{ name: string; image_url: string } | null> {
-	const spotifyCredentials = await db.select().from(spotifyTokens);
+	const spotifyCredentials = await db.select().from(spotifyTokensTable);
 
 	if (spotifyCredentials.length === 1) {
 		const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {

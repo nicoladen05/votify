@@ -22,6 +22,13 @@
       "when": 1772100886822,
       "tag": "0002_volatile_quasar",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772173321344,
+      "tag": "0003_organic_ted_forrester",
+      "breakpoints": true
     }
   ]
 }

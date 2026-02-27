@@ -20,7 +20,8 @@ export const spotifyTokens = pgTable(
 		expires_at: timestamp('expires_at').notNull(),
 		account_name: text('account_name').notNull(),
 		account_mail: text('account_mail').notNull(),
-		account_img: text('account_img').notNull()
+		account_img: text('account_img').notNull(),
+		account_id: text('account_id').notNull()
 	},
 	(table) => [
 		foreignKey({

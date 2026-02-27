@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { Link2OffIcon, PlusIcon, UserRoundIcon } from '@lucide/svelte';
+	import { Link2OffIcon, PlusIcon } from '@lucide/svelte';
 	import Button from '../ui/Button.svelte';
 	import { spotifyAuthUrl } from '$lib';
 	import { page } from '$app/state';
 	import { enhance } from '$app/forms';
+	import { spotifyAuthUrl } from '$lib';
+	import { page } from '$app/state';
 
 	let {
-		onSelect,
+		onSelect = () => {},
 		selected = $bindable(NaN),
 		isSettings = false,
 		spotifyAccounts,
@@ -22,17 +24,19 @@
 				You can link multiple Spotify accounts to your profile.
 			</p>
 		</div>
-		<Button
-			variant="hero"
-			size="sm"
-			class="w-full sm:w-auto"
-			onclick={() => {
-				window.location.href = spotifyAuthUrl + '&state=' + page.url.pathname;
-			}}
-		>
-			<PlusIcon class="h-4 w-4" />
-			Add Account
-		</Button>
+		{#if page.url.pathname.includes('settings')}
+			<Button
+				onclick={() => {
+					window.location.href = spotifyAuthUrl + '&state=' + page.url.pathname;
+				}}
+				variant="hero"
+				size="sm"
+				class="w-full sm:w-auto"
+			>
+				<PlusIcon class="h-4 w-4" />
+				Add Account
+			</Button>
+		{/if}
 	</div>
 
 	<div class="space-y-2.5">
@@ -43,13 +47,16 @@
 				<form
 					method="post"
 					action="?/selectAccount"
-					use:enhance={({ formData, cancel }) => {
+					use:enhance={async ({ formData, cancel }) => {
 						const id = formData.get('account-id') as string;
 						selected = parseInt(id); // optimistic UI update
 						if (!roomid) cancel();
 
-						return ({ result }) => {
-							if (result.type === 'success') onSelect();
+						return ({ result, update }) => {
+							if (result.type === 'success') {
+								update();
+								onSelect();
+							}
 						};
 					}}
 				>
@@ -69,6 +76,8 @@
 		account_name: string;
 		account_mail: string;
 		connectedAt: string;
+		account_img: string;
+		account_id: string;
 	},
 	isSelected: boolean
 )}
@@ -79,8 +88,12 @@
 		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 			<div class="flex items-center gap-3">
 				<!-- Profile Picture -->
-				<div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary/80">
-					<UserRoundIcon class="h-4 w-4 text-muted-foreground" />
+				<div class="flex h-9 w-9 items-center justify-center rounded-full bg-accent/10">
+					<img
+						src={account.account_img}
+						alt="User avatar"
+						class="h-9 w-9 rounded-full object-cover"
+					/>
 				</div>
 
 				<!-- Keine Ahnung ob account_mail hier geht, sonst connectedAt -->
@@ -93,9 +106,18 @@
 			<div class="flex items-center justify-between gap-2 sm:justify-start">
 				<p class="text-xs text-muted-foreground">{account.connectedAt}</p>
 				{#if isSettings}
-					<Button variant="ghost" size="icon" class="h-8 w-8" aria-label="Unlink account">
-						<Link2OffIcon class="h-4 w-4" />
-					</Button>
+					<form method="post" action="?/unlinkSpotify" use:enhance>
+						<input type="hidden" name="account-id" value={account.account_id} />
+						<Button
+							type="submit"
+							variant="ghost"
+							size="icon"
+							class="h-8 w-8"
+							aria-label="Unlink account"
+						>
+							<Link2OffIcon class="h-4 w-4" />
+						</Button>
+					</form>
 				{/if}
 			</div>
 		</div>

@@ -53,6 +53,14 @@ export async function setAccessToken(
 	if (!userProfileRequest.ok) return null;
 
 	const userProfile = await userProfileRequest.json();
+	const res = await db
+		.select()
+		.from(spotifyTokens)
+		.where(eq(spotifyTokens.account_id, userProfile.id));
+	if (res.length !== 0) {
+		return;
+	}
+
 	console.log(userProfile);
 	const spotifyToken = await db
 		.insert(spotifyTokens)
@@ -63,7 +71,8 @@ export async function setAccessToken(
 			userId,
 			account_name: userProfile.display_name,
 			account_mail: userProfile.email,
-			account_img: userProfile.images[0].url
+			account_img: userProfile.images[0].url,
+			account_id: userProfile.id
 		})
 		.returning({ id: spotifyTokens.id });
 

@@ -39,6 +39,8 @@ export async function GET({ url, locals }) {
 	await setAccessToken(data.access_token, data.expires_in, data.refresh_token, locals.user.id);
 	const pathSplit = path.split('/');
 	const roomId = parseInt(pathSplit[pathSplit.length - 1]);
-	await db.update(room).set({ state: 'offline' }).where(eq(room.id, roomId));
+	if (path.includes('room')) {
+		await db.update(room).set({ state: 'offline' }).where(eq(room.id, roomId));
+	}
 	return redirect(303, path);
 }
