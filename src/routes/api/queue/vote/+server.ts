@@ -80,7 +80,7 @@ export const DELETE: RequestHandler = async ({ request, cookies, url }) => {
 		.where(
 			and(
 				eq(votes.room_id, roomId),
-				eq(song_id, votes.song_id),
+				eq(votes.song_id, song_id),
 				eq(votes.guest_cookie, guest_cookie)
 			)
 		);
