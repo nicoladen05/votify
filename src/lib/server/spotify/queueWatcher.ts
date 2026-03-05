@@ -137,17 +137,18 @@ async function pollRoom(roomId: number) {
 			return;
 		}
 
-		const remainingMs = data.item.duration_ms - data.progress_ms;
+		const progressMs = data.progress_ms ?? 0;
+		const remainingMs = data.item.duration_ms - progressMs;
 
 		const nowPlaying: NowPlaying = {
 			state: data.is_playing ? 'playing' : 'paused',
 			song: {
 				trackId: data.item.id,
 				title: data.item.name,
-				artist: data.item.artists[0].name,
-				coverImage: data.item.album.images[0].url,
+				artist: data.item.artists?.[0]?.name ?? '',
+				coverImage: data.item.album?.images?.[0]?.url ?? '',
 				duration: data.item.duration_ms,
-				progress: (data.progress_ms / data.item.duration_ms) * 100
+				progress: (progressMs / data.item.duration_ms) * 100
 			}
 		};
 
