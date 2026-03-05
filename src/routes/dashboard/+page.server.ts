@@ -86,9 +86,15 @@ export const actions: Actions = {
 		const roomId = parseInt(formData.get('room-id') as string);
 		if (!formData) return;
 
-		stopAndRemoveRoomWorker(roomId);
+		const deletedRooms = await db
+			.delete(room)
+			.where(and(eq(room.id, roomId), eq(room.userId, locals.user!.id)))
+			.returning({ id: room.id });
 
-		await db.delete(room).where(and(eq(room.id, roomId), eq(room.userId, locals.user!.id)));
+		// Room was removed successfully
+		if (deletedRooms.length > 1) {
+			stopAndRemoveRoomWorker(roomId);
+		}
 	},
 
 	signOut: async ({ request }) => {
