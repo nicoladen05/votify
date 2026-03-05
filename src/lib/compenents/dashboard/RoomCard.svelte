@@ -77,7 +77,7 @@
 					Stop
 				</Button>
 			</form>
-		{:else if (room.state = 'missing_credentials')}
+		{:else if room.state === 'missing_credentials'}
 			<Button
 				class="text-nowrap"
 				variant="missing-credentials"
