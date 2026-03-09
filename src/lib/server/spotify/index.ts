@@ -54,15 +54,7 @@ export async function setAccessToken(
 	if (!userProfileRequest.ok) return null;
 
 	const userProfile = await userProfileRequest.json();
-	const res = await db
-		.select()
-		.from(spotifyTokens)
-		.where(eq(spotifyTokens.account_id, userProfile.id));
-	if (res.length !== 0) {
-		return;
-	}
 
-	console.log(userProfile);
 	const spotifyToken = await db
 		.insert(spotifyTokens)
 		.values({

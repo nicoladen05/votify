@@ -1,10 +1,7 @@
 import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
-import { db } from '$lib/server/db/index.js';
-import { room } from '$lib/server/db/schema.js';
 import { setAccessToken } from '$lib/server/spotify';
 import { error, json, redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
 
 export async function GET({ url, locals }) {
 	if (!locals.user) {
@@ -12,7 +9,9 @@ export async function GET({ url, locals }) {
 	}
 
 	const code = url.searchParams.get('code');
-	const path = url.searchParams.get('state');
+	const encodedPath = url.searchParams.get('state') ?? '';
+	const path = decodeURIComponent(encodedPath);
+
 	if (!code || !path) throw redirect(303, '/admin');
 
 	const header = {
@@ -37,10 +36,6 @@ export async function GET({ url, locals }) {
 	const data = await response.json();
 
 	await setAccessToken(data.access_token, data.expires_in, data.refresh_token, locals.user.id);
-	const pathSplit = path.split('/');
-	const roomId = parseInt(pathSplit[pathSplit.length - 1]);
-	if (path.includes('room')) {
-		await db.update(room).set({ state: 'offline' }).where(eq(room.id, roomId));
-	}
+
 	return redirect(303, path);
 }
