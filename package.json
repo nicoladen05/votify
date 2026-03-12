@@ -37,6 +37,7 @@
 		"eslint-plugin-svelte": "^3.14.0",
 		"globals": "^17.3.0",
 		"prettier": "^3.8.1",
+		"prettier-plugin-organize-imports": "^4.3.0",
 		"prettier-plugin-svelte": "^3.4.1",
 		"prettier-plugin-tailwindcss": "^0.7.2",
 		"svelte": "^5.49.2",
@@ -51,7 +52,9 @@
 		"@fontsource/inter": "^5.2.8",
 		"@fontsource/plus-jakarta-sans": "^5.2.8",
 		"@lucide/svelte": "^0.574.0",
+		"@svelte-put/qr": "^2.1.1",
 		"@sveltejs/adapter-node": "^5.5.3",
-		"postgres": "^3.4.8"
+		"postgres": "^3.4.8",
+		"resend": "^6.9.2"
 	}
 }

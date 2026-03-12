@@ -1,0 +1,1 @@
+ALTER TABLE "spotifyTokens" ADD COLUMN "account_id" text NOT NULL;
