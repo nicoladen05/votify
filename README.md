@@ -48,8 +48,6 @@ cp .env.example .env
 - `DATABASE_URL`
 - `ORIGIN`
 - `BETTER_AUTH_SECRET`
-- `ADMIN_EMAIL`
-- `ADMIN_PASSWORD`
 
 4. Start PostgreSQL:
 
@@ -79,7 +77,6 @@ npm run dev
 - `npm run db:generate` - generate migrations
 - `npm run db:migrate` - run migrations
 - `npm run db:studio` - open Drizzle Studio
-
 
 ## Project structure
 

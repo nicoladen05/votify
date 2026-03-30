@@ -5,6 +5,8 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 
+	let { roomId } = $props();
+
 	type QueueSong = {
 		song_uri: string;
 		song_id: string;
@@ -68,7 +70,7 @@
 	}
 
 	async function fetchQueue() {
-		const response = await fetch('/api/queue');
+		const response = await fetch(`/api/queue?roomId=${roomId}`);
 		const { queueItems, isClosed } = await response.json();
 
 		votingClosed = isClosed;
@@ -79,7 +81,7 @@
 	}
 
 	async function getVotes() {
-		const res = await fetch('/api/queue/vote');
+		const res = await fetch(`/api/queue/vote?roomId=${roomId}`);
 		const data = await res.json();
 		for (const vote of data) {
 			userVotes[vote.song_id] = vote.is_upvote ? 'upvote' : 'downvote';
@@ -118,7 +120,7 @@
 			const is_upvote = type === 'upvote';
 			// User wants to change vote
 			if (!userVotes[id]) {
-				await fetch('/api/queue/vote', {
+				await fetch(`/api/queue/vote?roomId=${roomId}`, {
 					method: 'POST',
 					body: JSON.stringify({
 						song_id: id,
@@ -127,7 +129,7 @@
 				});
 			} // User hasn't voted anything and votes
 			else {
-				await fetch('/api/queue/vote', {
+				await fetch(`/api/queue/vote?roomId=${roomId}`, {
 					method: 'PATCH',
 					body: JSON.stringify({
 						song_id: id,
@@ -139,7 +141,7 @@
 			userVotes = { ...userVotes, [id]: type };
 		} else {
 			// User takes back vote
-			await fetch('/api/queue/vote', {
+			await fetch(`/api/queue/vote?roomId=${roomId}`, {
 				method: 'DELETE',
 				body: JSON.stringify({
 					song_id: id

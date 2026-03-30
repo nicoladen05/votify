@@ -1,6 +1,6 @@
 {
-  "id": "66d96ce9-8120-49d2-a6c9-033b12be96a0",
-  "prevId": "22ffbff0-67ca-46ac-b7c7-188a8266bf61",
+  "id": "a5b43bb3-e5cb-4add-b917-ed617cd87401",
+  "prevId": "428cd80d-6ab8-4370-9138-c70f9c9ba421",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -23,29 +23,92 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.room": {
+      "name": "room",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "spotifyTokens": {
+          "name": "spotifyTokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'offline'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "room_userId_user_id_fk": {
+          "name": "room_userId_user_id_fk",
+          "tableFrom": "room",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "room_spotifyTokens_spotifyTokens_id_fk": {
+          "name": "room_spotifyTokens_spotifyTokens_id_fk",
+          "tableFrom": "room",
+          "tableTo": "spotifyTokens",
+          "columnsFrom": [
+            "spotifyTokens"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.songQueueItem": {
       "name": "songQueueItem",
       "schema": "",
       "columns": {
+        "room_id": {
+          "name": "room_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "song_id": {
           "name": "song_id",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
-        },
-        "upvotes": {
-          "name": "upvotes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "downvotes": {
-          "name": "downvotes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
         },
         "song_uri": {
           "name": "song_uri",
@@ -73,8 +136,30 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "foreignKeys": {
+        "songQueueItem_room_id_room_id_fk": {
+          "name": "songQueueItem_room_id_room_id_fk",
+          "tableFrom": "songQueueItem",
+          "tableTo": "room",
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "songQueueItem_room_id_song_id_pk": {
+          "name": "songQueueItem_room_id_song_id_pk",
+          "columns": [
+            "room_id",
+            "song_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -84,6 +169,18 @@
       "name": "spotifyTokens",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "access_token": {
           "name": "access_token",
           "type": "text",
@@ -104,16 +201,22 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "spotifyTokens_access_token_refresh_token_pk": {
-          "name": "spotifyTokens_access_token_refresh_token_pk",
-          "columns": [
-            "access_token",
-            "refresh_token"
-          ]
+      "foreignKeys": {
+        "spotifyTokens_userId_user_id_fk": {
+          "name": "spotifyTokens_userId_user_id_fk",
+          "tableFrom": "spotifyTokens",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
@@ -123,6 +226,12 @@
       "name": "votes",
       "schema": "",
       "columns": {
+        "room_id": {
+          "name": "room_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "song_id": {
           "name": "song_id",
           "type": "text",
@@ -144,14 +253,16 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "votes_song_id_songQueueItem_song_id_fk": {
-          "name": "votes_song_id_songQueueItem_song_id_fk",
+        "votes_room_id_song_id_songQueueItem_room_id_song_id_fk": {
+          "name": "votes_room_id_song_id_songQueueItem_room_id_song_id_fk",
           "tableFrom": "votes",
           "tableTo": "songQueueItem",
           "columnsFrom": [
+            "room_id",
             "song_id"
           ],
           "columnsTo": [
+            "room_id",
             "song_id"
           ],
           "onDelete": "cascade",
@@ -172,9 +283,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "votes_song_id_guest_cookie_pk": {
-          "name": "votes_song_id_guest_cookie_pk",
+        "votes_room_id_song_id_guest_cookie_pk": {
+          "name": "votes_room_id_song_id_guest_cookie_pk",
           "columns": [
+            "room_id",
             "song_id",
             "guest_cookie"
           ]

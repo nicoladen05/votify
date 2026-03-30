@@ -1,13 +1,26 @@
-import { redirect, type Handle } from '@sveltejs/kit';
 import { building } from '$app/environment';
+import type { RouteId } from '$app/types';
 import { auth } from '$lib/server/auth';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { startSpotifyWorker } from '$lib/server/spotify/queueWatcher';
-import { generateAdminUser } from '$lib/server/generateAdminUser';
+
+const PUBLIC_ROUTES: RouteId[] = [
+	'/',
+	'/room/[roomId]/guest',
+
+	'/auth/login',
+	'/auth/signup',
+	'/auth/signup/complete',
+	'/auth/forgot-password',
+	'/auth/reset-password',
+
+	'/api/now-playing-sse',
+	'/api/queue/vote',
+	'/api/queue',
+	'/api/search'
+];
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {
-	generateAdminUser();
-
 	const session = await auth.api.getSession({ headers: event.request.headers });
 
 	if (session) {
@@ -15,14 +28,16 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 		event.locals.user = session.user;
 	}
 
-	// Protect the admin page
-	if (!event.locals.user && event.url.pathname === '/admin') {
-		return redirect(302, '/admin/auth/login');
+	const routeId = event.route.id;
+	const isPublic = routeId ? PUBLIC_ROUTES.includes(routeId) : false;
+	const isAuthRoute =
+		routeId?.startsWith('/api/auth') || event.url.pathname.startsWith('/api/auth');
+
+	if (!event.locals.user && !isPublic && !isAuthRoute) {
+		return redirect(302, '/auth/login');
 	}
 
 	return svelteKitHandler({ event, resolve, auth, building });
 };
-
-startSpotifyWorker();
 
 export const handle: Handle = handleBetterAuth;
