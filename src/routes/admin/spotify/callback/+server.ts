@@ -1,4 +1,4 @@
-import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
+import { ORIGIN, SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
 import { setAccessToken } from '$lib/server/spotify';
 import { error, json, redirect } from '@sveltejs/kit';
@@ -22,7 +22,7 @@ export async function GET({ url, locals }) {
 	const body = new URLSearchParams({
 		grant_type: 'authorization_code',
 		code: code,
-		redirect_uri: 'http://127.0.0.1:5173/admin/spotify/callback'
+		redirect_uri: ORIGIN + '/admin/spotify/callback'
 	});
 
 	const response = await fetch('https://accounts.spotify.com/api/token', {
