@@ -2,8 +2,8 @@
 	import type { Snippet } from 'svelte';
 	import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	type Variant = 'hero' | 'hero-outline' | 'ghost';
-	type Size = 'sm' | 'md' | 'lg' | 'icon';
+	type Variant = 'hero' | 'hero-outline' | 'ghost' | 'destructive' | 'missing-credentials';
+	type Size = 'xs' | 'sm' | 'md' | 'lg' | 'icon';
 
 	let {
 		variant = 'hero',
@@ -18,14 +18,17 @@
 		hero: 'bg-accent text-primary hover:bg-accent/85',
 		'hero-outline':
 			'border border-border bg-transparent text-foreground hover:border-accent hover:bg-accent/10',
-		ghost: 'bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground'
+		ghost: 'bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground',
+		destructive: 'bg-destructive text-primary hover:bg-destructive/85',
+		'missing-credentials': 'bg-warning text-primary hover:bg-warning/85'
 	};
 
 	const sizeClasses: Record<Size, string> = {
+		xs: 'h-5 px-4 text-sm',
 		sm: 'h-9 px-4 text-sm',
 		md: 'h-10 px-4 text-sm',
 		lg: 'h-12 px-6 text-base',
-		icon: 'h-10 w-10'
+		icon: 'h-6 w-6 md:h-10 md:w-10'
 	};
 </script>
 

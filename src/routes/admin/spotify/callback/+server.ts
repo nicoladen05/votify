@@ -1,11 +1,18 @@
-import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
+import { ORIGIN, SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
 import { setAccessToken } from '$lib/server/spotify';
-import { json, redirect } from '@sveltejs/kit';
+import { error, json, redirect } from '@sveltejs/kit';
 
-export async function GET({ url }) {
+export async function GET({ url, locals }) {
+	if (!locals.user) {
+		throw error(403, '/admin');
+	}
+
 	const code = url.searchParams.get('code');
-	if (!code) throw redirect(303, '/admin');
+	const encodedPath = url.searchParams.get('state') ?? '';
+	const path = decodeURIComponent(encodedPath);
+
+	if (!code || !path) throw redirect(303, '/admin');
 
 	const header = {
 		Authorization: 'Basic ' + btoa(`${PUBLIC_SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`),
@@ -15,7 +22,7 @@ export async function GET({ url }) {
 	const body = new URLSearchParams({
 		grant_type: 'authorization_code',
 		code: code,
-		redirect_uri: 'http://127.0.0.1:5173/admin/spotify/callback'
+		redirect_uri: ORIGIN + '/admin/spotify/callback'
 	});
 
 	const response = await fetch('https://accounts.spotify.com/api/token', {
@@ -28,7 +35,7 @@ export async function GET({ url }) {
 
 	const data = await response.json();
 
-	await setAccessToken(data.access_token, data.expires_in, data.refresh_token);
+	await setAccessToken(data.access_token, data.expires_in, data.refresh_token, locals.user.id);
 
-	return redirect(303, '/admin');
+	return redirect(303, path);
 }

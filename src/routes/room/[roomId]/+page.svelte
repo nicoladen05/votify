@@ -1,22 +1,34 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { page } from '$app/stores';
+	import { qr } from '@svelte-put/qr/svg';
 	import {
 		ArrowLeftIcon,
 		CheckIcon,
+		CircleStop,
 		CopyIcon,
 		ExternalLinkIcon,
-		QrCodeIcon,
+		Info,
+		KeyRound,
+		PlayIcon,
 		RadioIcon
 	} from '@lucide/svelte';
 	import Button from '$lib/compenents/ui/Button.svelte';
+	import type { PageProps } from './$types';
+	import NowPlaying from '$lib/compenents/NowPlaying.svelte';
+	import Dialog from '$lib/compenents/Dialog.svelte';
+	import { enhance } from '$app/forms';
+	import SpotifyAccounts from '$lib/compenents/settings/SpotifyAccounts.svelte';
+	const { data }: PageProps = $props();
 
-	const votePath = $derived(`/room/${$page.params.roomId}/guest`);
+	const votePath = $derived(`/room/${data.room.roomid}/guest`);
+	const room = $derived(data.room);
+	const hasCredentials = $derived(data.room.status !== 'missing_credentials');
 
 	let copied = $state(false);
 	let roomLink = $state('');
-
+	let RoomState = $derived(data.room.status);
+	let isOpen = $state(false);
 	onMount(() => {
 		roomLink = `${window.location.origin}${votePath}`;
 	});
@@ -28,6 +40,14 @@
 			copied = false;
 		}, 2000);
 	};
+
+	function openDialog() {
+		isOpen = true;
+	}
+
+	function closeDialog() {
+		isOpen = false;
+	}
 </script>
 
 <div class="min-h-screen bg-primary p-4 md:p-10">
@@ -41,13 +61,30 @@
 		</a>
 
 		<div class="mb-10 text-center" style="animation: fade-up 0.6s ease-out forwards;">
-			<div
-				class="glow-green-sm animate-glow-pulse mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-2 text-sm font-bold text-accent"
-			>
-				<span class="h-2 w-2 animate-pulse rounded-full bg-accent"></span>
-				Room is Live
-			</div>
-			<h1 class="mb-2 text-3xl font-bold text-foreground">Friday Night Vibes</h1>
+			{#if RoomState === 'live'}
+				<div
+					class="glow-green-sm animate-glow-pulse mb-6 inline-flex items-center gap-2 rounded-full bg-accent/20 px-4 py-2 text-sm font-bold text-accent"
+				>
+					<span class="h-2 w-2 animate-pulse rounded-full bg-accent"></span>
+					Room is Live
+				</div>
+			{:else if RoomState === 'offline'}
+				<div
+					class="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary/80 px-4 py-2 text-sm font-bold text-muted-foreground"
+				>
+					<span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
+					Room is offline
+				</div>
+			{:else}
+				<div
+					class="mb-6 inline-flex items-center gap-2 rounded-full bg-destructive/20 px-4 py-2 text-sm font-bold text-destructive"
+				>
+					<span class="h-2 w-2 rounded-full bg-destructive"></span>
+					Room is unable to play
+				</div>
+			{/if}
+
+			<h1 class="mb-2 text-3xl font-bold text-foreground">{data.room.name}</h1>
 			<p class="text-muted-foreground">Share the link or QR code with your guests</p>
 		</div>
 
@@ -59,14 +96,20 @@
 				<div
 					class="flex h-48 w-48 items-center justify-center rounded-2xl border border-border bg-primary"
 				>
-					<QrCodeIcon class="h-24 w-24 text-muted-foreground" />
+					<svg
+						class="p-2 text-foreground"
+						use:qr={{
+							data: roomLink,
+							shape: 'circle'
+						}}
+					/>
 				</div>
 
 				<div class="w-full">
 					<p class="mb-2 block text-xs text-muted-foreground">Room Link</p>
 					<div class="flex items-center gap-2 rounded-lg border border-border bg-primary p-3">
 						<code class="flex-1 truncate text-sm text-foreground">{roomLink || votePath}</code>
-						<Button variant="ghost" size="sm" class="shrink-0" onclick={copyLink}>
+						<Button variant="ghost" size="xs" class="h-8 shrink-0" onclick={copyLink}>
 							{#if copied}
 								<CheckIcon class="h-4 w-4 text-accent" />
 							{:else}
@@ -76,8 +119,36 @@
 						</Button>
 					</div>
 				</div>
-
-				<a class="w-full" href={resolve(`/room/${$page.params.roomId}/guest`)}>
+				{#if RoomState === 'offline'}
+					<form class="w-full" method="post" action="?/launchRoom" use:enhance>
+						<input value={room.roomid} name="room-id" type="hidden" />
+						<input value={room.spotifyTokens} name="spotify-id" type="hidden" />
+						<Button variant="hero" type="submit" class="w-full">
+							<PlayIcon class="mr-1 h-3 w-3" />
+							Launch
+						</Button>
+					</form>
+				{:else if RoomState === 'live'}
+					<form class="w-full" method="post" action="?/stopRoom" use:enhance>
+						<input value={room.roomid} name="room-id" type="hidden" />
+						<Button variant="destructive" type="submit" class="w-full">
+							<CircleStop class="mr-1 h-3 w-3" />
+							Stop
+						</Button>
+					</form>
+				{:else if RoomState === 'missing_credentials'}
+					<div class="w-full">
+						<Button disabled variant="hero" type="submit" class="w-full">
+							<PlayIcon class="mr-1 h-3 w-3" />
+							Launch
+						</Button>
+						<p class="flex items-start gap-1 pt-1 pl-1 text-muted-foreground">
+							<Info class="mt-1 h-4 w-4" />
+							Please connect your Spotify account down below
+						</p>
+					</div>
+				{/if}
+				<a class="w-full" href={resolve(`/room/${data.room.roomid}/guest`)}>
 					<Button variant="hero" class="w-full">
 						<ExternalLinkIcon class="mr-2 h-4 w-4" />
 						Open Guest View
@@ -87,24 +158,83 @@
 		</div>
 
 		<div
-			class="rounded-2xl border border-border bg-secondary p-6"
-			style="animation: fade-up 0.6s ease-out 0.2s forwards; opacity: 0;"
+			class="flex flex-col gap-4 rounded-2xl border border-border bg-secondary p-6"
+			style="animation: fade-up 0.6s ease-out 0.2s forwards; opacity: 0; will-change: opacity, transform;"
 		>
-			<h3
-				class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
-			>
-				<RadioIcon class="h-4 w-4 text-accent" />
-				Now Playing
-			</h3>
-			<div class="flex items-center gap-4">
-				<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
-					<RadioIcon class="h-8 w-8 text-muted-foreground" />
-				</div>
+			{#if hasCredentials}
 				<div>
-					<p class="font-bold text-foreground">Waiting for votes...</p>
-					<p class="text-sm text-muted-foreground">The top-voted track will play next</p>
+					<h3
+						class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
+					>
+						<RadioIcon class="h-4 w-4 text-accent" />
+						Now Playing
+					</h3>
+					<NowPlaying roomId={data.room.roomid} isGuest={false} />
+				</div>
+			{/if}
+			<div>
+				<h2
+					class="mb-4 flex items-center gap-2 text-sm font-bold tracking-wider text-muted-foreground uppercase"
+				>
+					<KeyRound class="h-4 w-4 text-accent" />
+					{#if hasCredentials}
+						Spotify Account
+					{:else}
+						Credentials Missing
+					{/if}
+				</h2>
+				<div
+					class=" flex flex-col items-start justify-between gap-4 rounded-xl border border-border bg-secondary p-6 sm:flex-row sm:items-center"
+				>
+					<div class="flex items-center gap-4">
+						{#if !hasCredentials}
+							<div
+								class="flex min-h-12 min-w-12 items-center justify-center rounded-full bg-accent/10"
+							>
+								<RadioIcon class="h-6 w-6 text-accent" />
+							</div>
+							<div>
+								<h3 class="font-bold text-nowrap text-foreground">Spotify Connection</h3>
+								<p class="line-clamp-2 text-sm text-muted-foreground">
+									Connect your account to start playing music in rooms.
+								</p>
+							</div>
+						{:else}
+							<div class="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10">
+								<img
+									src={data.user?.account_img}
+									alt="User avatar"
+									class="h-12 w-12 rounded-full object-cover"
+								/>
+							</div>
+							<div>
+								<p class="font-bold text-foreground">{data.user?.account_name}</p>
+								<p class="text-sm text-muted-foreground">Authorized Spotify account</p>
+							</div>
+						{/if}
+					</div>
+
+					{#if !hasCredentials}
+						<Button
+							class="w-full text-nowrap md:w-auto"
+							variant="hero"
+							size="sm"
+							onclick={openDialog}>Connect Spotify</Button
+						>
+					{:else}
+						<form method="post" action="?/logoutSpotify" class="flex justify-end" use:enhance>
+							<input type="hidden" value={data.room.roomid} name="room-id" />
+							<Button type="submit" variant="destructive" class="text-nowrap" size="sm"
+								>Disconnect Spotify</Button
+							>
+						</form>
+					{/if}
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<Dialog bind:isOpen onClose={closeDialog} className="border-none">
+	<SpotifyAccounts spotifyAccounts={data.spotifyAccounts} onSelect={closeDialog} />
+</Dialog>

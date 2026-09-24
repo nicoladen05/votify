@@ -3,10 +3,13 @@
 	import { ChevronLeftIcon } from '@lucide/svelte';
 	import type { PageProps } from './$types';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
+
+	const origin = page.url.origin;
 
 	const queryparams = {
 		response_type: 'code',
-		redirect_uri: 'http://127.0.0.1:5173/admin/spotify/callback',
+		redirect_uri: origin + '/admin/spotify/callback',
 		scope: 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
 	};
 

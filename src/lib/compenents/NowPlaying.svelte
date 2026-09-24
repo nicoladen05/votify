@@ -2,6 +2,9 @@
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
+	import { RadioIcon } from '@lucide/svelte';
+
+	let { roomId, isGuest = true } = $props();
 
 	type PlaybackState = {
 		state: 'playing' | 'paused' | 'stopped';
@@ -45,7 +48,7 @@
 	onMount(() => {
 		if (!browser) return;
 
-		const evt = new EventSource('/api/now-playing-sse');
+		const evt = new EventSource(`/api/now-playing-sse?roomId=${roomId}`);
 		evt.onmessage = (e) => {
 			const data: PlaybackState = JSON.parse(e.data);
 			playbackState.set(data);
@@ -66,16 +69,18 @@
 </script>
 
 <section class="rounded-2xl border border-border bg-secondary/90 p-3">
-	<div class="mb-2 flex items-center justify-between px-1">
-		<p
-			class={`flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase ${$playbackState.state === 'playing' ? 'text-accent  ' : ''}`}
-		>
-			<span
-				class={`h-1.5 w-1.5 rounded-full ${$playbackState.state === 'playing' ? 'animate-pulse bg-accent' : 'hidden'}`}
-			></span>
-			Now Playing
-		</p>
-	</div>
+	{#if isGuest}
+		<div class="mb-2 flex items-center justify-between px-1">
+			<p
+				class={`flex items-center gap-2 text-xs font-semibold tracking-[0.18em] uppercase ${$playbackState.state === 'playing' ? 'text-accent  ' : ''}`}
+			>
+				<span
+					class={`h-1.5 w-1.5 rounded-full ${$playbackState.state === 'playing' ? 'animate-pulse bg-accent' : 'hidden'}`}
+				></span>
+				Now Playing
+			</p>
+		</div>
+	{/if}
 
 	{#if $playbackState.state !== 'stopped'}
 		<div class="flex min-h-26 gap-2 rounded-xl border border-border/80 bg-secondary p-1.5">
@@ -134,8 +139,14 @@
 			</div>
 		</div>
 	{:else}
-		<div class="flex w-full items-center justify-center rounded-xl bg-primary/40 p-6">
-			<h1 class="text-lg font-medium text-muted-foreground">No song is playing right now</h1>
+		<div class="flex items-center gap-4">
+			<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
+				<RadioIcon class="h-8 w-8 text-muted-foreground" />
+			</div>
+			<div>
+				<p class="font-bold text-foreground">Waiting for votes...</p>
+				<p class="text-sm text-muted-foreground">The top-voted track will play next</p>
+			</div>
 		</div>
 	{/if}
 </section>

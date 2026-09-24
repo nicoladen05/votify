@@ -1,7 +1,8 @@
 import { SPOTIFY_CLIENT_SECRET } from '$env/static/private';
 import { PUBLIC_SPOTIFY_CLIENT_ID } from '$env/static/public';
 import { db } from '$lib/server/db';
-import { spotifyTokens } from '$lib/server/db/schema';
+import { room, spotifyTokens } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 
 async function getAccessTokenFromRefreshToken(
 	refreshToken: string
@@ -37,24 +38,51 @@ async function getAccessTokenFromRefreshToken(
  * @param expiresIn The number of seconds the token is valid for
  * @param refreshToken The spotify refresh token
  */
-export async function setAccessToken(accessToken: string, expiresIn: number, refreshToken: string) {
-	const expiresAt = new Date(Date.now() + expiresIn * 1000);
+export async function setAccessToken(
+	accessToken: string,
+	expires: Date | number,
+	refreshToken: string,
+	userId: string
+) {
+	const expiresAt: Date =
+		typeof expires === 'number' ? new Date(Date.now() + expires * 1000) : expires;
 
-	await db.insert(spotifyTokens).values({
-		access_token: accessToken,
-		refresh_token: refreshToken,
-		expires_at: expiresAt
+	const userProfileRequest = await fetch('https://api.spotify.com/v1/me', {
+		headers: { Authorization: `Bearer ${accessToken}` }
 	});
+
+	if (!userProfileRequest.ok) return null;
+
+	const userProfile = await userProfileRequest.json();
+
+	const spotifyToken = await db
+		.insert(spotifyTokens)
+		.values({
+			access_token: accessToken,
+			refresh_token: refreshToken,
+			expires_at: expiresAt,
+			userId,
+			account_name: userProfile.display_name,
+			account_mail: userProfile.email,
+			account_img: userProfile.images[0].url,
+			account_id: userProfile.id
+		})
+		.returning({ id: spotifyTokens.id });
+
+	// Set this token on all rooms owned by the current user
+	await db.update(room).set({ spotifyTokens: spotifyToken[0].id }).where(eq(room.userId, userId));
 }
 
 /**
- * Retrieves the access token from the database
- * @returns The access token or null if not found
+ * Retrieves the access token from the database with a given tokenId
+ * @param tokenId The token id of the token
+ * @returns The access token, null if not found
  */
-export async function getAccessToken(): Promise<string | null> {
+export async function getAccessTokenByTokenId(tokenId: number): Promise<string | null> {
 	const spotifyToken = await db
 		.select()
 		.from(spotifyTokens)
+		.where(eq(spotifyTokens.id, tokenId))
 		.limit(1)
 		.then((tokens) => tokens[0]);
 
@@ -62,19 +90,49 @@ export async function getAccessToken(): Promise<string | null> {
 		return null;
 	}
 
-	const accessTokenIsValid = spotifyToken.expires_at >= new Date();
+	return getValidAccessToken(
+		spotifyToken.id,
+		spotifyToken.access_token,
+		spotifyToken.refresh_token,
+		spotifyToken.expires_at
+	);
+}
+
+/**
+ * Refreshes the access token, if it was invalid, otherwise it just returns the provided token
+ * @param tokenId
+ * @param accessToken
+ * @param refreshToken
+ * @param expiresAt
+ * @returns
+ */
+async function getValidAccessToken(
+	tokenId: number,
+	accessToken: string,
+	refreshToken: string,
+	expiresAt: Date
+): Promise<string | null> {
+	const accessTokenIsValid = expiresAt >= new Date();
 
 	if (accessTokenIsValid) {
-		return spotifyToken.access_token;
+		return accessToken;
 	} else {
-		const { accessToken, expiresIn } = (await getAccessTokenFromRefreshToken(
-			spotifyToken.refresh_token
-		)) ?? { accessToken: '', expiresIn: 0 };
+		const { accessToken, expiresIn } = (await getAccessTokenFromRefreshToken(refreshToken)) ?? {
+			accessToken: '',
+			expiresIn: 0
+		};
 
-		await db.update(spotifyTokens).set({
-			access_token: accessToken,
-			expires_at: new Date(Date.now() + expiresIn * 1000)
-		});
+		if (!accessToken) {
+			return null;
+		}
+
+		await db
+			.update(spotifyTokens)
+			.set({
+				access_token: accessToken,
+				expires_at: new Date(Date.now() + expiresIn * 1000)
+			})
+			.where(eq(spotifyTokens.id, tokenId));
 
 		return accessToken;
 	}

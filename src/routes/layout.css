@@ -26,6 +26,9 @@
 	--destructive: 0 83% 65%;
 	--destructive-foreground: 0 0% 100%;
 
+	--warning: 42 90% 55%;
+	--warning-foreground: 0 0% 0%;
+
 	--border: 0 0% 18%;
 	--input: 0 0% 18%;
 	--ring: 141 76% 48%;
@@ -70,6 +73,8 @@
 	--color-accent-foreground: hsl(var(--accent-foreground));
 	--color-destructive: var(--destructive-color);
 	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-warning: hsl(var(--warning));
+	--color-warning-foreground: hsl(var(--warning-foreground));
 	--color-spotify-green: hsl(var(--primary));
 	--radius: var(--radius);
 }
